@@ -25,21 +25,21 @@ Implement the KASBench AWS infrastructure as OpenTofu IaC with a root module at 
     - Create `artifacts/.gitkeep` for output directory
     - _Requirements: 2.2, 2.3_
 
-- [ ] 2. Implement Network Module
-  - [ ] 2.1 Create network module with VPC, subnets, and AZ selection
+- [x] 2. Implement Network Module
+  - [x] 2.1 Create network module with VPC, subnets, and AZ selection
     - Create `modules/network/variables.tf` with inputs: vpc_cidr, public_subnet_cidr, private_subnet_cidr, availability_zone_mode, availability_zone, aws_region, tags
     - Create `modules/network/az.tf` with `data.aws_availability_zones`, `random_shuffle` resource (count-gated on mode), and `locals.selected_az`
     - Create `modules/network/main.tf` with VPC (dns_support, dns_hostnames enabled), public subnet, private subnet — all in `local.selected_az`
     - _Requirements: 3.1, 3.2, 3.3, 4.1, 4.2, 4.3_
 
-  - [ ] 2.2 Add Internet Gateway, NAT Gateway, and route tables
+  - [x] 2.2 Add Internet Gateway, NAT Gateway, and route tables
     - Add Internet Gateway attached to VPC
     - Add Elastic IP and NAT Gateway in public subnet with `depends_on` for IGW
     - Add public route table with 0.0.0.0/0 → IGW route and subnet association
     - Add private route table with 0.0.0.0/0 → NAT GW route and subnet association
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-  - [ ] 2.3 Create network module outputs
+  - [x] 2.3 Create network module outputs
     - Create `modules/network/outputs.tf` exposing: vpc_id, public_subnet_id, private_subnet_id, selected_availability_zone, igw_id, nat_gw_id, route_table_ids
     - _Requirements: 3.4, 4.4, 5.6_
 
