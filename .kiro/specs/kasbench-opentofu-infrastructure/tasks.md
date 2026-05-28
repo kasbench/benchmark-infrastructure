@@ -71,14 +71,14 @@ Implement the KASBench AWS infrastructure as OpenTofu IaC with a root module at 
     - Create `modules/iam/outputs.tf` exposing: control_plane_instance_profile_name, worker_instance_profile_name, benchmark_runner_instance_profile_name, all_roles
     - _Requirements: 13.5_
 
-- [ ] 5. Implement Storage Module
-  - [ ] 5.1 Create storage module with pre-created EBS volumes and StorageClass metadata
+- [x] 5. Implement Storage Module
+  - [x] 5.1 Create storage module with pre-created EBS volumes and StorageClass metadata
     - Create `modules/storage/variables.tf` with inputs: availability_zone, etcd_volume_config, environment_profile, debug_retention_enabled, tags
     - Create `modules/storage/main.tf` with pre-created GP3 EBS volume for etcd (configurable size, IOPS, throughput, encrypted)
     - Create `modules/storage/outputs.tf` exposing: etcd_volume_id, all_volumes (with metadata), storage_class_metadata (default_workload_storage, high_iops_storage)
     - _Requirements: 12.1, 12.2, 12.4, 21.4_
 
-- [ ] 6. Checkpoint - Validate foundational modules
+- [x] 6. Checkpoint - Validate foundational modules
   - Ensure all tests pass, ask the user if questions arise.
   - Run `tofu init` and `tofu validate` to confirm module structure is syntactically valid
 
