@@ -103,8 +103,8 @@ Implement the KASBench AWS infrastructure as OpenTofu IaC with a root module at 
     - Create `modules/compute/outputs.tf` exposing: control_plane_metadata, worker_nodes_metadata (grouped by arch with per-node details), benchmark_runner_metadata
     - _Requirements: 8.3, 9.4, 19.1, 19.2_
 
-- [ ] 8. Implement Load Balancing Module
-  - [~] 8.1 Create load-balancing module with internal NLB, listeners, and target groups
+- [x] 8. Implement Load Balancing Module
+  - [x] 8.1 Create load-balancing module with internal NLB, listeners, and target groups
     - Create `modules/load-balancing/variables.tf` with inputs: vpc_id, private_subnet_id, nlb_sg_id, nlb_config, tags
     - Create `modules/load-balancing/main.tf` with internal NLB (internal=true, network type), target groups with configurable health checks, listeners with for_each over nlb_config.listeners
     - Create `modules/load-balancing/outputs.tf` exposing: nlb_metadata (dns_name, arn, scheme, listeners, target_groups)
