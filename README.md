@@ -4,34 +4,80 @@ OpenTofu infrastructure-as-code for provisioning the KASBench (Kubernetes Autosc
 
 ## Architecture Overview
 
+```mermaid
+graph TB
+    subgraph External["External (not managed by this stack)"]
+        Bastion["Bastion Host"]
+        S3["S3 Run Bucket"]
+    end
+
+    subgraph VPC["AWS VPC (10.0.0.0/16)"]
+        subgraph Public["Public Subnet"]
+            IGW["Internet Gateway"]
+            NAT["NAT Gateway + EIP"]
+            Runner["Benchmark Runner<br/>(t3.medium, public IP)"]
+        end
+
+        subgraph Private["Private Subnet"]
+            CP["Control Plane<br/>(m8i.xlarge)"]
+            EtcdVol[("etcd EBS Volume<br/>(GP3)")]
+            subgraph Workers["Worker Node Groups"]
+                AMD64["amd64 Workers<br/>(c8i.4xlarge × N)"]
+                ARM64["arm64 Workers<br/>(c8g.4xlarge × N)"]
+            end
+            NLB["Internal NLB"]
+        end
+    end
+
+    Bastion -->|SSH| Runner
+    Bastion -->|SSH| CP
+    Bastion -->|SSH| AMD64
+    Bastion -->|SSH| ARM64
+
+    Runner -->|Benchmark Traffic| NLB
+    NLB -->|Route to NodePorts| AMD64
+    NLB -->|Route to NodePorts| ARM64
+
+    CP --- EtcdVol
+    CP -->|kubelet, API| AMD64
+    CP -->|kubelet, API| ARM64
+
+    IGW -->|Public Route| Runner
+    NAT -->|Private Egress| CP
+    NAT -->|Private Egress| Workers
+
+    Runner -.->|S3 Write| S3
+```
+
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                          AWS VPC (10.0.0.0/16)                      │
 │                                                                     │
-│  ┌─────────────────────────┐   ┌─────────────────────────────────┐ │
-│  │    Public Subnet         │   │       Private Subnet             │ │
-│  │                          │   │                                  │ │
-│  │  ┌──────────────────┐   │   │  ┌────────────────────────────┐ │ │
-│  │  │ Benchmark Runner  │   │   │  │ Control Plane (amd64)      │ │ │
-│  │  │ (t3.medium)       │───┼───┼─▶│ + etcd EBS volume          │ │ │
-│  │  └──────────────────┘   │   │  └────────────────────────────┘ │ │
-│  │                          │   │                                  │ │
-│  │  ┌──────────────────┐   │   │  ┌────────────────────────────┐ │ │
-│  │  │ NAT Gateway       │   │   │  │ Workers: amd64 group       │ │ │
-│  │  └──────────────────┘   │   │  │ Workers: arm64 group        │ │ │
-│  │                          │   │  └────────────────────────────┘ │ │
-│  │  ┌──────────────────┐   │   │                                  │ │
-│  │  │ Internet Gateway  │   │   │  ┌────────────────────────────┐ │ │
-│  │  └──────────────────┘   │   │  │ Internal NLB               │ │ │
-│  │                          │   │  └────────────────────────────┘ │ │
-│  └─────────────────────────┘   └─────────────────────────────────┘ │
+│  ┌─────────────────────────┐   ┌─────────────────────────────────┐  │
+│  │    Public Subnet        │   │       Private Subnet            │  │
+│  │                         │   │                                 │  │
+│  │  ┌──────────────────┐   │   │  ┌────────────────────────────┐ │  │
+│  │  │ Benchmark Runner │   │   │  │ Control Plane (amd64)      │ │  │
+│  │  │ (t3.medium)      │───┼───┼─▶│ + etcd EBS volume          │ │  │
+│  │  └──────────────────┘   │   │  └────────────────────────────┘ │  │
+│  │                         │   │                                 │  │
+│  │  ┌──────────────────┐   │   │  ┌────────────────────────────┐ │  │
+│  │  │ NAT Gateway      │   │   │  │ Workers: amd64 group       │ │  │
+│  │  └──────────────────┘   │   │  │ Workers: arm64 group       │ │  │
+│  │                         │   │  └────────────────────────────┘ │  │
+│  │  ┌──────────────────┐   │   │                                 │  │
+│  │  │ Internet Gateway │   │   │  ┌────────────────────────────┐ │  │
+│  │  └──────────────────┘   │   │  │ Internal NLB               │ │  │
+│  │                         │   │  └────────────────────────────┘ │  │
+│  └─────────────────────────┘   └─────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────┘
          ▲
          │ SSH
   ┌──────┴──────┐
-  │ Bastion Host │  (externally managed)
+  │ Bastion Host│  (externally managed)
   └─────────────┘
 ```
+
 
 ## Prerequisites
 
