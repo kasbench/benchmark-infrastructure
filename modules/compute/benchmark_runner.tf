@@ -9,6 +9,7 @@ resource "aws_instance" "benchmark_runner" {
   availability_zone           = var.availability_zone
   vpc_security_group_ids      = [var.benchmark_runner_sg_id]
   iam_instance_profile        = var.benchmark_runner_profile_name
+  key_name                    = var.key_name
   associate_public_ip_address = true
 
   root_block_device {

@@ -13,6 +13,7 @@ resource "aws_instance" "control_plane" {
   availability_zone      = var.availability_zone
   vpc_security_group_ids = [var.control_plane_sg_id]
   iam_instance_profile   = var.control_plane_profile_name
+  key_name               = var.key_name
 
   root_block_device {
     volume_type           = var.root_volume_config.type

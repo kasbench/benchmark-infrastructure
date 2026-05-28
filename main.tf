@@ -79,6 +79,9 @@ module "compute" {
   private_subnet_id = module.network.private_subnet_id
   availability_zone = module.network.selected_availability_zone
 
+  # SSH key pair
+  key_name = var.key_name
+
   # Instance configurations
   benchmark_runner_config = var.benchmark_runner_config
   control_plane_config    = var.control_plane_config

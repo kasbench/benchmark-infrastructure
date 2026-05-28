@@ -11,6 +11,7 @@ resource "aws_instance" "worker_amd64" {
   availability_zone      = var.availability_zone
   vpc_security_group_ids = [var.worker_node_sg_id]
   iam_instance_profile   = var.worker_profile_name
+  key_name               = var.key_name
 
   root_block_device {
     volume_type           = var.root_volume_config.type
@@ -49,6 +50,7 @@ resource "aws_instance" "worker_arm64" {
   availability_zone      = var.availability_zone
   vpc_security_group_ids = [var.worker_node_sg_id]
   iam_instance_profile   = var.worker_profile_name
+  key_name               = var.key_name
 
   root_block_device {
     volume_type           = var.root_volume_config.type
