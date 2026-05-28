@@ -57,8 +57,8 @@ Implement the KASBench AWS infrastructure as OpenTofu IaC with a root module at 
     - Create `modules/security/outputs.tf` exposing: benchmark_runner_sg_id, nlb_sg_id, control_plane_sg_id, worker_node_sg_id, all_security_groups (with rule descriptions)
     - _Requirements: 6.6_
 
-- [ ] 4. Implement IAM Module
-  - [ ] 4.1 Create IAM module with roles, policies, and instance profiles
+- [x] 4. Implement IAM Module
+  - [x] 4.1 Create IAM module with roles, policies, and instance profiles
     - Create `modules/iam/variables.tf` with inputs: run_bucket_name, environment_profile, tags
     - Create `modules/iam/main.tf` with EC2 assume-role policy document
     - Implement control-plane role: EC2 describe + EBS attach/detach scoped to KASBench tag
@@ -67,7 +67,7 @@ Implement the KASBench AWS infrastructure as OpenTofu IaC with a root module at 
     - Create instance profiles for all three roles
     - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5, 12.3, 15.3, 21.2_
 
-  - [ ] 4.2 Create IAM module outputs
+  - [x] 4.2 Create IAM module outputs
     - Create `modules/iam/outputs.tf` exposing: control_plane_instance_profile_name, worker_instance_profile_name, benchmark_runner_instance_profile_name, all_roles
     - _Requirements: 13.5_
 
