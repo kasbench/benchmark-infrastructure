@@ -1,0 +1,251 @@
+# KASBench Environment Description
+
+**Run ID:** ${run_id}
+
+---
+
+## Metadata
+
+| Field | Value |
+|-------|-------|
+| Run ID | ${run_id} |
+| Environment Profile | ${environment_profile} |
+| AWS Region | ${aws_region} |
+| Availability Zone | ${availability_zone} |
+| Created At | ${timestamp} |
+| OpenTofu Version | ${opentofu_version} |
+| AWS Provider Version | ${aws_provider_version} |
+| Git Commit Hash | ${git_commit_hash} |
+
+---
+
+## Network
+
+### VPC
+
+| Field | Value |
+|-------|-------|
+| VPC ID | ${vpc_id} |
+| VPC CIDR | ${vpc_cidr} |
+
+### Subnets
+
+| Subnet | ID | CIDR |
+|--------|----|------|
+| Public | ${public_subnet_id} | ${public_subnet_cidr} |
+| Private | ${private_subnet_id} | ${private_subnet_cidr} |
+
+### Gateways
+
+| Gateway | ID |
+|---------|----|
+| Internet Gateway | ${igw_id} |
+| NAT Gateway | ${nat_gw_id} |
+
+### Route Tables
+
+| Route Table | ID |
+|-------------|----|
+%{ for name, id in route_table_ids ~}
+| ${name} | ${id} |
+%{ endfor ~}
+
+---
+
+## Security Groups
+
+| Name | ID | Rules |
+|------|----|-------|
+%{ for key, sg in security_groups ~}
+| ${sg.name} | ${sg.id} | ${sg.rules} |
+%{ endfor ~}
+
+---
+
+## IAM Roles
+
+| Component | Role Name | Instance Profile |
+|-----------|-----------|-----------------|
+%{ for key, role in iam_roles ~}
+| ${key} | ${role.role_name} | ${role.profile_name} |
+%{ endfor ~}
+
+---
+
+## Compute
+
+### Control Plane
+
+| Field | Value |
+|-------|-------|
+| Instance ID | ${control_plane.instance_id} |
+| Private IP | ${control_plane.private_ip} |
+| Instance Type | ${control_plane.instance_type} |
+| AMI ID | ${control_plane.ami_id} |
+| Architecture | ${control_plane.architecture} |
+| Subnet ID | ${control_plane.subnet_id} |
+| Root Volume ID | ${control_plane.root_volume_id} |
+
+### Workers — amd64
+
+| Index | Instance ID | Private IP | Instance Type | AMI ID | Subnet ID | Root Volume ID |
+|-------|-------------|------------|---------------|--------|-----------|----------------|
+%{ for node in worker_nodes.amd64 ~}
+| ${node.node_index} | ${node.instance_id} | ${node.private_ip} | ${node.instance_type} | ${node.ami_id} | ${node.subnet_id} | ${node.root_volume_id} |
+%{ endfor ~}
+
+### Workers — arm64
+
+| Index | Instance ID | Private IP | Instance Type | AMI ID | Subnet ID | Root Volume ID |
+|-------|-------------|------------|---------------|--------|-----------|----------------|
+%{ for node in worker_nodes.arm64 ~}
+| ${node.node_index} | ${node.instance_id} | ${node.private_ip} | ${node.instance_type} | ${node.ami_id} | ${node.subnet_id} | ${node.root_volume_id} |
+%{ endfor ~}
+
+### Benchmark Runner
+
+| Field | Value |
+|-------|-------|
+| Instance ID | ${benchmark_runner.instance_id} |
+| Public IP | ${benchmark_runner.public_ip} |
+| Private IP | ${benchmark_runner.private_ip} |
+| Instance Type | ${benchmark_runner.instance_type} |
+| AMI ID | ${benchmark_runner.ami_id} |
+| Architecture | ${benchmark_runner.architecture} |
+| Subnet ID | ${benchmark_runner.subnet_id} |
+| Root Volume ID | ${benchmark_runner.root_volume_id} |
+
+---
+
+## Load Balancing
+
+### Network Load Balancer
+
+| Field | Value |
+|-------|-------|
+| DNS Name | ${nlb.dns_name} |
+| ARN | ${nlb.arn} |
+| Scheme | ${nlb.scheme} |
+
+### Listeners
+
+| Name | Port | Protocol |
+|------|------|----------|
+%{ for name, listener in nlb.listeners ~}
+| ${name} | ${listener.port} | ${listener.protocol} |
+%{ endfor ~}
+
+### Target Groups
+
+| Name | ARN | Port |
+|------|-----|------|
+%{ for name, tg in nlb.target_groups ~}
+| ${name} | ${tg.arn} | ${tg.port} |
+%{ endfor ~}
+
+---
+
+## Storage
+
+### EBS Volumes
+
+| Name | Volume ID | Size (GiB) | Type | IOPS | Throughput | AZ | Workload |
+|------|-----------|------------|------|------|------------|-----|----------|
+%{ for name, vol in ebs_volumes ~}
+| ${name} | ${vol.volume_id} | ${vol.size_gib} | ${vol.type} | ${vol.iops} | ${vol.throughput} | ${vol.az} | ${vol.workload} |
+%{ endfor ~}
+
+### Storage Class Metadata
+
+```json
+${jsonencode(storage_class_metadata)}
+```
+
+---
+
+## External Dependencies
+
+### Bastion Host
+
+| Field | Value |
+|-------|-------|
+| Instance ID | ${bastion_host.instance_id != null ? bastion_host.instance_id : "N/A"} |
+| Private IP | ${bastion_host.private_ip != null ? bastion_host.private_ip : "N/A"} |
+| Name | ${bastion_host.name != null ? bastion_host.name : "N/A"} |
+
+### S3 Run Bucket
+
+| Field | Value |
+|-------|-------|
+| Bucket Name | ${run_bucket_name} |
+| Environment Prefix | ${artifact_prefixes.environment} |
+| Reports Prefix | ${artifact_prefixes.reports} |
+| Trials Prefix | ${artifact_prefixes.trials} |
+
+---
+%{ if kubernetes_metadata != null ~}
+
+## Kubernetes Metadata
+
+| Field | Value |
+|-------|-------|
+%{ if kubernetes_metadata.version != null ~}
+| Kubernetes Version | ${kubernetes_metadata.version} |
+%{ endif ~}
+%{ if kubernetes_metadata.cni_plugin != null ~}
+| CNI Plugin | ${kubernetes_metadata.cni_plugin} |
+%{ endif ~}
+%{ if kubernetes_metadata.cni_version != null ~}
+| CNI Version | ${kubernetes_metadata.cni_version} |
+%{ endif ~}
+%{ if kubernetes_metadata.kube_proxy_mode != null ~}
+| Kube-Proxy Mode | ${kubernetes_metadata.kube_proxy_mode} |
+%{ endif ~}
+%{ if kubernetes_metadata.container_runtime != null ~}
+| Container Runtime | ${kubernetes_metadata.container_runtime} |
+%{ endif ~}
+%{ if kubernetes_metadata.helm_version != null ~}
+| Helm Version | ${kubernetes_metadata.helm_version} |
+%{ endif ~}
+
+---
+%{ endif ~}
+%{ if observability_metadata != null ~}
+
+## Observability Metadata
+
+| Field | Value |
+|-------|-------|
+%{ if observability_metadata.prometheus_retention != null ~}
+| Prometheus Retention | ${observability_metadata.prometheus_retention} |
+%{ endif ~}
+%{ if observability_metadata.jaeger_retention != null ~}
+| Jaeger Retention | ${observability_metadata.jaeger_retention} |
+%{ endif ~}
+%{ if observability_metadata.scrape_interval != null ~}
+| Scrape Interval | ${observability_metadata.scrape_interval} |
+%{ endif ~}
+
+---
+%{ endif ~}
+%{ if autoscaler_metadata != null ~}
+
+## Autoscaler Metadata
+
+| Field | Value |
+|-------|-------|
+%{ if autoscaler_metadata.hpa_enabled != null ~}
+| HPA Enabled | ${autoscaler_metadata.hpa_enabled} |
+%{ endif ~}
+%{ if autoscaler_metadata.vpa_enabled != null ~}
+| VPA Enabled | ${autoscaler_metadata.vpa_enabled} |
+%{ endif ~}
+%{ if autoscaler_metadata.keda_enabled != null ~}
+| KEDA Enabled | ${autoscaler_metadata.keda_enabled} |
+%{ endif ~}
+%{ if autoscaler_metadata.autoscaler_under_test != null ~}
+| Autoscaler Under Test | ${autoscaler_metadata.autoscaler_under_test} |
+%{ endif ~}
+
+---
+%{ endif ~}

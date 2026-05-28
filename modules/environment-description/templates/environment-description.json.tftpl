@@ -1,0 +1,60 @@
+{
+  "kasbench_environment": {
+    "metadata": {
+      "run_id": ${jsonencode(run_id)},
+      "environment_profile": ${jsonencode(environment_profile)},
+      "created_at": ${jsonencode(timestamp)},
+      "opentofu_version": ${jsonencode(opentofu_version)},
+      "aws_provider_version": ${jsonencode(aws_provider_version)}
+    },
+    "infrastructure": {
+      "region": ${jsonencode(aws_region)},
+      "availability_zone": ${jsonencode(availability_zone)},
+      "network": {
+        "vpc": {
+          "id": ${jsonencode(vpc_id)},
+          "cidr": ${jsonencode(vpc_cidr)}
+        },
+        "subnets": {
+          "public": {
+            "id": ${jsonencode(public_subnet_id)},
+            "cidr": ${jsonencode(public_subnet_cidr)}
+          },
+          "private": {
+            "id": ${jsonencode(private_subnet_id)},
+            "cidr": ${jsonencode(private_subnet_cidr)}
+          }
+        },
+        "gateways": {
+          "internet_gateway": ${jsonencode(igw_id)},
+          "nat_gateway": ${jsonencode(nat_gw_id)}
+        },
+        "route_tables": ${jsonencode(route_table_ids)}
+      },
+      "security": {
+        "security_groups": ${jsonencode(security_groups)}
+      },
+      "iam": {
+        "roles": ${jsonencode(iam_roles)}
+      },
+      "compute": {
+        "control_plane": ${jsonencode(control_plane)},
+        "worker_nodes": ${jsonencode(worker_nodes)},
+        "benchmark_runner": ${jsonencode(benchmark_runner)}
+      },
+      "load_balancer": ${jsonencode(nlb)},
+      "storage": {
+        "ebs_volumes": ${jsonencode(ebs_volumes)},
+        "storage_classes": ${jsonencode(storage_class_metadata)}
+      }
+    },
+    "external_dependencies": {
+      "bastion_host": ${jsonencode(bastion_host)},
+      "run_bucket": ${jsonencode(run_bucket_name)},
+      "artifact_prefixes": ${jsonencode(artifact_prefixes)}
+    },
+    "kubernetes_metadata": ${kubernetes_metadata != null ? jsonencode(kubernetes_metadata) : jsonencode("not provided")},
+    "observability_metadata": ${observability_metadata != null ? jsonencode(observability_metadata) : jsonencode("not provided")},
+    "autoscaler_metadata": ${autoscaler_metadata != null ? jsonencode(autoscaler_metadata) : jsonencode("not provided")}
+  }
+}

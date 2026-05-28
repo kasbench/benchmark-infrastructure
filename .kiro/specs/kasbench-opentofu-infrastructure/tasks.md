@@ -110,24 +110,24 @@ Implement the KASBench AWS infrastructure as OpenTofu IaC with a root module at 
     - Create `modules/load-balancing/outputs.tf` exposing: nlb_metadata (dns_name, arn, scheme, listeners, target_groups)
     - _Requirements: 11.1, 11.2, 11.3, 11.4, 19.4_
 
-- [ ] 9. Implement Environment Description Module
-  - [~] 9.1 Create environment-description module variables and structure
+- [x] 9. Implement Environment Description Module
+  - [x] 9.1 Create environment-description module variables and structure
     - Create `modules/environment-description/variables.tf` with all inputs (run_id, profile, region, AZ, network outputs, security outputs, IAM outputs, compute outputs, NLB outputs, storage outputs, external refs, metadata)
     - Create `modules/environment-description/templates/` directory
     - _Requirements: 16.1, 16.2_
 
-  - [~] 9.2 Create JSON template and local_file resource
+  - [x] 9.2 Create JSON template and local_file resource
     - Create `modules/environment-description/templates/environment-description.json.tftpl` with full infrastructure metadata structure
     - Include: metadata (run_id, profile, timestamps, versions), infrastructure (network, security, IAM, compute, NLB, storage), external dependencies, kubernetes/observability/autoscaler metadata
     - Handle optional metadata fields with conditional inclusion (omit or mark "not provided")
     - _Requirements: 16.1, 16.3, 16.5, 20.2, 20.3, 23.4_
 
-  - [~] 9.3 Create Markdown template and local_file resource
+  - [x] 9.3 Create Markdown template and local_file resource
     - Create `modules/environment-description/templates/environment-description.md.tftpl` with human-readable report format
     - Include all the same data as JSON but formatted as Markdown tables and sections
     - _Requirements: 16.2, 16.3_
 
-  - [~] 9.4 Create environment-description module main.tf and outputs
+  - [x] 9.4 Create environment-description module main.tf and outputs
     - Create `modules/environment-description/main.tf` with templatefile() calls, local_file resources for JSON, Markdown, and checksums
     - Create `modules/environment-description/outputs.tf` exposing: json_path, markdown_path, checksums_path
     - _Requirements: 16.4, 23.5_
