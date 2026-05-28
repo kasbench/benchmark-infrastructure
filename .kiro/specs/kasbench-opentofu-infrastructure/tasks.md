@@ -82,75 +82,75 @@ Implement the KASBench AWS infrastructure as OpenTofu IaC with a root module at 
   - Ensure all tests pass, ask the user if questions arise.
   - Run `tofu init` and `tofu validate` to confirm module structure is syntactically valid
 
-- [ ] 7. Implement Compute Module
-  - [ ] 7.1 Create compute module with benchmark-runner instance
+- [x] 7. Implement Compute Module
+  - [x] 7.1 Create compute module with benchmark-runner instance
     - Create `modules/compute/variables.tf` with all inputs: subnet IDs, AZ, configs, AMIs, SG IDs, profile names, etcd_volume_id, environment_profile, debug_retention_enabled, tags
     - Create `modules/compute/benchmark_runner.tf` with EC2 instance in public subnet, public IP, configurable root volume, role/architecture tags
     - _Requirements: 7.1, 7.2, 7.3, 7.5, 10.2_
 
-  - [ ] 7.2 Create compute module with control-plane instance and etcd volume attachment
+  - [x] 7.2 Create compute module with control-plane instance and etcd volume attachment
     - Create `modules/compute/control_plane.tf` with EC2 instance in private subnet, configurable instance type, role metadata tags (kubernetes-role=control-plane, kubernetes-arch=amd64)
     - Add `aws_volume_attachment` for etcd EBS volume
     - Add lifecycle precondition to prevent debug_retention_enabled in benchmark profile
     - _Requirements: 8.1, 8.2, 8.3, 12.5, 22.2, 22.3_
 
-  - [ ] 7.3 Create compute module with worker node groups
+  - [x] 7.3 Create compute module with worker node groups
     - Create `modules/compute/workers.tf` with amd64 worker group using `count` and arm64 worker group using `count`
     - Apply architecture-specific AMIs, tags (kubernetes-arch, node-group, node-index), and configurable root volumes
     - _Requirements: 9.1, 9.2, 9.3, 9.5, 10.2, 12.5_
 
-  - [ ] 7.4 Create compute module outputs
+  - [x] 7.4 Create compute module outputs
     - Create `modules/compute/outputs.tf` exposing: control_plane_metadata, worker_nodes_metadata (grouped by arch with per-node details), benchmark_runner_metadata
     - _Requirements: 8.3, 9.4, 19.1, 19.2_
 
 - [ ] 8. Implement Load Balancing Module
-  - [ ] 8.1 Create load-balancing module with internal NLB, listeners, and target groups
+  - [~] 8.1 Create load-balancing module with internal NLB, listeners, and target groups
     - Create `modules/load-balancing/variables.tf` with inputs: vpc_id, private_subnet_id, nlb_sg_id, nlb_config, tags
     - Create `modules/load-balancing/main.tf` with internal NLB (internal=true, network type), target groups with configurable health checks, listeners with for_each over nlb_config.listeners
     - Create `modules/load-balancing/outputs.tf` exposing: nlb_metadata (dns_name, arn, scheme, listeners, target_groups)
     - _Requirements: 11.1, 11.2, 11.3, 11.4, 19.4_
 
 - [ ] 9. Implement Environment Description Module
-  - [ ] 9.1 Create environment-description module variables and structure
+  - [~] 9.1 Create environment-description module variables and structure
     - Create `modules/environment-description/variables.tf` with all inputs (run_id, profile, region, AZ, network outputs, security outputs, IAM outputs, compute outputs, NLB outputs, storage outputs, external refs, metadata)
     - Create `modules/environment-description/templates/` directory
     - _Requirements: 16.1, 16.2_
 
-  - [ ] 9.2 Create JSON template and local_file resource
+  - [~] 9.2 Create JSON template and local_file resource
     - Create `modules/environment-description/templates/environment-description.json.tftpl` with full infrastructure metadata structure
     - Include: metadata (run_id, profile, timestamps, versions), infrastructure (network, security, IAM, compute, NLB, storage), external dependencies, kubernetes/observability/autoscaler metadata
     - Handle optional metadata fields with conditional inclusion (omit or mark "not provided")
     - _Requirements: 16.1, 16.3, 16.5, 20.2, 20.3, 23.4_
 
-  - [ ] 9.3 Create Markdown template and local_file resource
+  - [~] 9.3 Create Markdown template and local_file resource
     - Create `modules/environment-description/templates/environment-description.md.tftpl` with human-readable report format
     - Include all the same data as JSON but formatted as Markdown tables and sections
     - _Requirements: 16.2, 16.3_
 
-  - [ ] 9.4 Create environment-description module main.tf and outputs
+  - [~] 9.4 Create environment-description module main.tf and outputs
     - Create `modules/environment-description/main.tf` with templatefile() calls, local_file resources for JSON, Markdown, and checksums
     - Create `modules/environment-description/outputs.tf` exposing: json_path, markdown_path, checksums_path
     - _Requirements: 16.4, 23.5_
 
-- [ ] 10. Checkpoint - Validate all modules independently
+- [~] 10. Checkpoint - Validate all modules independently
   - Ensure all tests pass, ask the user if questions arise.
   - Run `tofu validate` to confirm all modules parse correctly
 
 - [ ] 11. Wire modules together in root main.tf and outputs.tf
-  - [ ] 11.1 Create root main.tf with all module instantiations
+  - [~] 11.1 Create root main.tf with all module instantiations
     - Instantiate all 7 modules with correct variable passing and cross-module output references
     - Follow dependency order: network → security, iam, storage → compute → load-balancing → environment-description
     - Pass common_tags to all modules
     - Compute artifact_output_path as `artifacts/${var.run_id}/` when not explicitly set
     - _Requirements: 2.1, 2.5, 14.1, 14.3, 15.1, 19.5, 19.6, 20.1_
 
-  - [ ] 11.2 Create root outputs.tf with bootstrap handoff outputs
+  - [~] 11.2 Create root outputs.tf with bootstrap handoff outputs
     - Expose: control_plane, worker_nodes, benchmark_runner, nlb, security_groups, storage, network, run_bucket_name, run_id, environment_description_paths
     - Include AMI IDs used for reproducibility auditing
     - _Requirements: 10.3, 18.3, 19.1, 19.2, 19.3, 19.4, 19.5, 19.6, 23.1, 23.2, 23.3_
 
 - [ ] 12. Implement debug retention and operational features
-  - [ ] 12.1 Add debug retention logic to compute and storage modules
+  - [~] 12.1 Add debug retention logic to compute and storage modules
     - Add lifecycle preconditions that error on `tofu destroy` when debug_retention_enabled=true and profile=small
     - Ensure benchmark profile always ignores debug_retention_enabled
     - Add `debug_retention_enabled` variable acceptance in relevant modules
@@ -174,7 +174,7 @@ Implement the KASBench AWS infrastructure as OpenTofu IaC with a root module at 
     - Confirm all taggable resources include required tags (Property 1)
     - _Requirements: 6.5, 11.3, 14.2, 15.2, 17.1, 18.2_
 
-- [ ] 14. Final checkpoint - Ensure all validation passes
+- [~] 14. Final checkpoint - Ensure all validation passes
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
