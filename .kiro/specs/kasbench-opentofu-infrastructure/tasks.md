@@ -6,21 +6,21 @@ Implement the KASBench AWS infrastructure as OpenTofu IaC with a root module at 
 
 ## Tasks
 
-- [ ] 1. Set up root module foundation and provider configuration
-  - [ ] 1.1 Create root module files: versions.tf, providers.tf, variables.tf
+- [x] 1. Set up root module foundation and provider configuration
+  - [x] 1.1 Create root module files: versions.tf, providers.tf, variables.tf
     - Create `versions.tf` with required OpenTofu version (>= 1.6.0) and required providers (aws ~> 5.0, random ~> 3.6, local ~> 2.5)
     - Create `providers.tf` with AWS provider configuration including `default_tags` block (Project, EnvironmentProfile, RunId, ManagedBy, Owner, Purpose)
     - Create `variables.tf` with all root-level input variables including validation blocks for `environment_profile`, `availability_zone_mode`, `availability_zone`, and `worker_groups`
     - Define `locals` block with `common_tags` map and computed `artifact_output_path`
     - _Requirements: 1.1, 1.4, 2.1, 17.1, 17.2, 17.3_
 
-  - [ ] 1.2 Create environment tfvars files
+  - [x] 1.2 Create environment tfvars files
     - Create `environments/small.tfvars` with small profile defaults (t3.large CP, 1 worker per group, 50 GiB root volumes, explicit AZ)
     - Create `environments/benchmark.tfvars` with benchmark profile defaults (m8i.xlarge CP, 5 workers per group, 100 GiB root volumes, random AZ)
     - Include placeholder values for AMI IDs, bastion SG ID, and run bucket name
     - _Requirements: 1.2, 1.3, 1.4, 2.4_
 
-  - [ ] 1.3 Create directory structure and placeholder files
+  - [x] 1.3 Create directory structure and placeholder files
     - Create `modules/network/`, `modules/security/`, `modules/iam/`, `modules/compute/`, `modules/load-balancing/`, `modules/storage/`, `modules/environment-description/` directories
     - Create `artifacts/.gitkeep` for output directory
     - _Requirements: 2.2, 2.3_
