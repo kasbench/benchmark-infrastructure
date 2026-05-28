@@ -2,6 +2,10 @@
 # Control Plane Instance
 # =============================================================================
 
+locals {
+  apply_debug_retention = var.debug_retention_enabled && var.environment_profile == "small"
+}
+
 resource "aws_instance" "control_plane" {
   ami                    = var.ami_amd64
   instance_type          = var.control_plane_config.instance_type
@@ -26,9 +30,12 @@ resource "aws_instance" "control_plane" {
 
   lifecycle {
     prevent_destroy = false
+
+    # Debug retention: block destroy when enabled for small profile.
+    # Benchmark profile always permits destruction regardless of the flag.
     precondition {
-      condition     = !(var.debug_retention_enabled && var.environment_profile == "benchmark")
-      error_message = "debug_retention_enabled must not be true when environment_profile is 'benchmark'"
+      condition     = !local.apply_debug_retention
+      error_message = "Debug retention is enabled for the small profile. Set debug_retention_enabled=false before destroying EC2 instances."
     }
   }
 }

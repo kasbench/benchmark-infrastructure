@@ -30,6 +30,13 @@ resource "aws_instance" "worker_amd64" {
 
   lifecycle {
     prevent_destroy = false
+
+    # Debug retention: block destroy when enabled for small profile.
+    # Benchmark profile always permits destruction regardless of the flag.
+    precondition {
+      condition     = !local.apply_debug_retention
+      error_message = "Debug retention is enabled for the small profile. Set debug_retention_enabled=false before destroying EC2 instances."
+    }
   }
 }
 
@@ -61,5 +68,12 @@ resource "aws_instance" "worker_arm64" {
 
   lifecycle {
     prevent_destroy = false
+
+    # Debug retention: block destroy when enabled for small profile.
+    # Benchmark profile always permits destruction regardless of the flag.
+    precondition {
+      condition     = !local.apply_debug_retention
+      error_message = "Debug retention is enabled for the small profile. Set debug_retention_enabled=false before destroying EC2 instances."
+    }
   }
 }

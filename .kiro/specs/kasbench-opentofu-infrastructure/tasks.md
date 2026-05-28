@@ -149,8 +149,8 @@ Implement the KASBench AWS infrastructure as OpenTofu IaC with a root module at 
     - Include AMI IDs used for reproducibility auditing
     - _Requirements: 10.3, 18.3, 19.1, 19.2, 19.3, 19.4, 19.5, 19.6, 23.1, 23.2, 23.3_
 
-- [ ] 12. Implement debug retention and operational features
-  - [~] 12.1 Add debug retention logic to compute and storage modules
+- [x] 12. Implement debug retention and operational features
+  - [x] 12.1 Add debug retention logic to compute and storage modules
     - Add lifecycle preconditions that error on `tofu destroy` when debug_retention_enabled=true and profile=small
     - Ensure benchmark profile always ignores debug_retention_enabled
     - Add `debug_retention_enabled` variable acceptance in relevant modules
