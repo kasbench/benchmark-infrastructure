@@ -43,8 +43,8 @@ Implement the KASBench AWS infrastructure as OpenTofu IaC with a root module at 
     - Create `modules/network/outputs.tf` exposing: vpc_id, public_subnet_id, private_subnet_id, selected_availability_zone, igw_id, nat_gw_id, route_table_ids
     - _Requirements: 3.4, 4.4, 5.6_
 
-- [ ] 3. Implement Security Module
-  - [ ] 3.1 Create security module with all security groups and rules
+- [x] 3. Implement Security Module
+  - [x] 3.1 Create security module with all security groups and rules
     - Create `modules/security/variables.tf` with inputs: vpc_id, bastion_security_group_id, tags
     - Create `modules/security/main.tf` with four security groups: benchmark_runner, nlb, control_plane, worker_node
     - Implement benchmark-runner SG: SSH ingress from bastion only, all egress
@@ -53,7 +53,7 @@ Implement the KASBench AWS infrastructure as OpenTofu IaC with a root module at 
     - Implement worker-node SG: 10250 from CP, 30000-32767 self, 9090/9100 self (observability), SSH from bastion, all egress
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 7.4, 11.5, 21.1_
 
-  - [ ] 3.2 Create security module outputs
+  - [x] 3.2 Create security module outputs
     - Create `modules/security/outputs.tf` exposing: benchmark_runner_sg_id, nlb_sg_id, control_plane_sg_id, worker_node_sg_id, all_security_groups (with rule descriptions)
     - _Requirements: 6.6_
 
