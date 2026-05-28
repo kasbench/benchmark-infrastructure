@@ -156,7 +156,7 @@ Implement the KASBench AWS infrastructure as OpenTofu IaC with a root module at 
     - Add `debug_retention_enabled` variable acceptance in relevant modules
     - _Requirements: 22.1, 22.2, 22.3_
 
-- [ ] 13. Final validation and plan testing
+- [x] 13. Final validation and plan testing
   - [ ]* 13.1 Validate plan with small profile
     - Run `tofu init` and `tofu plan -var-file=environments/small.tfvars` (with placeholder values filled)
     - Verify plan produces expected resource count (4 EC2 instances, 1 VPC, 2 subnets, 1 IGW, 1 NAT GW, 4 SGs, 1 NLB, 1 EBS volume)
