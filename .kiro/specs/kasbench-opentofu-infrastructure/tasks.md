@@ -136,15 +136,15 @@ Implement the KASBench AWS infrastructure as OpenTofu IaC with a root module at 
   - Ensure all tests pass, ask the user if questions arise.
   - Run `tofu validate` to confirm all modules parse correctly
 
-- [ ] 11. Wire modules together in root main.tf and outputs.tf
-  - [~] 11.1 Create root main.tf with all module instantiations
+- [x] 11. Wire modules together in root main.tf and outputs.tf
+  - [x] 11.1 Create root main.tf with all module instantiations
     - Instantiate all 7 modules with correct variable passing and cross-module output references
     - Follow dependency order: network → security, iam, storage → compute → load-balancing → environment-description
     - Pass common_tags to all modules
     - Compute artifact_output_path as `artifacts/${var.run_id}/` when not explicitly set
     - _Requirements: 2.1, 2.5, 14.1, 14.3, 15.1, 19.5, 19.6, 20.1_
 
-  - [~] 11.2 Create root outputs.tf with bootstrap handoff outputs
+  - [x] 11.2 Create root outputs.tf with bootstrap handoff outputs
     - Expose: control_plane, worker_nodes, benchmark_runner, nlb, security_groups, storage, network, run_bucket_name, run_id, environment_description_paths
     - Include AMI IDs used for reproducibility auditing
     - _Requirements: 10.3, 18.3, 19.1, 19.2, 19.3, 19.4, 19.5, 19.6, 23.1, 23.2, 23.3_
