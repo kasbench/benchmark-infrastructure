@@ -3,8 +3,8 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "bastion_security_group_id" {
-  description = "Security group ID of the external bastion host for SSH access"
+variable "bastion_ssh_cidr" {
+  description = "CIDR block for SSH access from the bastion host (e.g., \"10.0.1.10/32\")"
   type        = string
 }
 

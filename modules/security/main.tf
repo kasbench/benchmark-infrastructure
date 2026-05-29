@@ -15,13 +15,13 @@ resource "aws_security_group" "benchmark_runner" {
 }
 
 resource "aws_security_group_rule" "runner_ssh_in" {
-  type                     = "ingress"
-  from_port                = 22
-  to_port                  = 22
-  protocol                 = "tcp"
-  source_security_group_id = var.bastion_security_group_id
-  security_group_id        = aws_security_group.benchmark_runner.id
-  description              = "SSH from bastion host"
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = [var.bastion_ssh_cidr]
+  security_group_id = aws_security_group.benchmark_runner.id
+  description       = "SSH from bastion host"
 }
 
 resource "aws_security_group_rule" "runner_egress" {
@@ -110,13 +110,13 @@ resource "aws_security_group_rule" "cp_kubelet" {
 }
 
 resource "aws_security_group_rule" "cp_ssh" {
-  type                     = "ingress"
-  from_port                = 22
-  to_port                  = 22
-  protocol                 = "tcp"
-  source_security_group_id = var.bastion_security_group_id
-  security_group_id        = aws_security_group.control_plane.id
-  description              = "SSH from bastion"
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = [var.bastion_ssh_cidr]
+  security_group_id = aws_security_group.control_plane.id
+  description       = "SSH from bastion"
 }
 
 resource "aws_security_group_rule" "cp_egress" {
@@ -183,13 +183,13 @@ resource "aws_security_group_rule" "worker_node_exporter" {
 }
 
 resource "aws_security_group_rule" "worker_ssh" {
-  type                     = "ingress"
-  from_port                = 22
-  to_port                  = 22
-  protocol                 = "tcp"
-  source_security_group_id = var.bastion_security_group_id
-  security_group_id        = aws_security_group.worker_node.id
-  description              = "SSH from bastion"
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = [var.bastion_ssh_cidr]
+  security_group_id = aws_security_group.worker_node.id
+  description       = "SSH from bastion"
 }
 
 resource "aws_security_group_rule" "worker_egress" {

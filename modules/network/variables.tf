@@ -1,3 +1,15 @@
+variable "bastion_vpc_id" {
+  description = "VPC ID of the external bastion host (for VPC peering)"
+  type        = string
+  default     = ""
+}
+
+variable "bastion_vpc_cidr" {
+  description = "CIDR block of the bastion VPC (for route table entries)"
+  type        = string
+  default     = ""
+}
+
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
   type        = string

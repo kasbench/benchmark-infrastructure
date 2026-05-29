@@ -68,3 +68,56 @@ resource "aws_route_table_association" "private" {
   subnet_id      = aws_subnet.private.id
   route_table_id = aws_route_table.private.id
 }
+
+# =============================================================================
+# VPC Peering with Bastion VPC
+# =============================================================================
+
+resource "aws_vpc_peering_connection" "bastion" {
+  count = var.bastion_vpc_id != "" ? 1 : 0
+
+  vpc_id      = aws_vpc.benchmark.id
+  peer_vpc_id = var.bastion_vpc_id
+  auto_accept = true
+
+  tags = merge(var.tags, { Name = "kasbench-to-bastion-peering" })
+}
+
+# Route from KASBench private subnet to bastion VPC
+resource "aws_route" "private_to_bastion" {
+  count = var.bastion_vpc_id != "" ? 1 : 0
+
+  route_table_id            = aws_route_table.private.id
+  destination_cidr_block    = var.bastion_vpc_cidr
+  vpc_peering_connection_id = aws_vpc_peering_connection.bastion[0].id
+}
+
+# Route from KASBench public subnet to bastion VPC
+resource "aws_route" "public_to_bastion" {
+  count = var.bastion_vpc_id != "" ? 1 : 0
+
+  route_table_id            = aws_route_table.public.id
+  destination_cidr_block    = var.bastion_vpc_cidr
+  vpc_peering_connection_id = aws_vpc_peering_connection.bastion[0].id
+}
+
+# Route from bastion VPC to KASBench VPC
+# This uses the bastion VPC's main route table
+data "aws_route_table" "bastion_main" {
+  count = var.bastion_vpc_id != "" ? 1 : 0
+
+  vpc_id = var.bastion_vpc_id
+
+  filter {
+    name   = "association.main"
+    values = ["true"]
+  }
+}
+
+resource "aws_route" "bastion_to_kasbench" {
+  count = var.bastion_vpc_id != "" ? 1 : 0
+
+  route_table_id            = data.aws_route_table.bastion_main[0].id
+  destination_cidr_block    = var.vpc_cidr
+  vpc_peering_connection_id = aws_vpc_peering_connection.bastion[0].id
+}

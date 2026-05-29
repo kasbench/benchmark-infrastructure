@@ -70,9 +70,21 @@ variable "private_subnet_cidr" {
 # External Dependencies
 # =============================================================================
 
-variable "bastion_security_group_id" {
+variable "bastion_ssh_cidr" {
   type        = string
-  description = "Security group ID of the external bastion/controller host"
+  description = "CIDR block for SSH access from the bastion host (e.g., \"172.31.23.100/32\")"
+}
+
+variable "bastion_vpc_id" {
+  type        = string
+  description = "VPC ID of the external bastion host (for VPC peering)"
+  default     = ""
+}
+
+variable "bastion_vpc_cidr" {
+  type        = string
+  description = "CIDR block of the bastion VPC (for route table entries, e.g., \"172.31.0.0/16\")"
+  default     = ""
 }
 
 variable "bastion_host_info" {

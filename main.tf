@@ -20,6 +20,8 @@ module "network" {
   availability_zone_mode = var.availability_zone_mode
   availability_zone      = var.availability_zone
   aws_region             = var.aws_region
+  bastion_vpc_id         = var.bastion_vpc_id
+  bastion_vpc_cidr       = var.bastion_vpc_cidr
   tags                   = local.common_tags
 }
 
@@ -32,7 +34,7 @@ module "security" {
   source = "./modules/security"
 
   vpc_id                    = module.network.vpc_id
-  bastion_security_group_id = var.bastion_security_group_id
+  bastion_ssh_cidr = var.bastion_ssh_cidr
   tags                      = local.common_tags
 }
 

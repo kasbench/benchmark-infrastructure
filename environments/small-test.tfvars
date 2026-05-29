@@ -32,7 +32,9 @@ private_subnet_cidr = "10.0.2.0/24"
 # External Dependencies (PLACEHOLDERS - replace before apply)
 # -----------------------------------------------------------------------------
 
-bastion_security_group_id = "sg-0b84e6350240299e4"          # Replace with bastion host SG ID
+bastion_ssh_cidr           = "172.31.23.100/32"                # Bastion host private IP
+bastion_vpc_id             = "vpc-66884d1b"                     # Bastion VPC ID (for peering)
+bastion_vpc_cidr           = "172.31.0.0/16"                    # Bastion VPC CIDR (for routing)
 run_bucket_name           = "kasbench-test-20260528-377288663341-us-east-1-an " # Replace with pre-existing S3 bucket name
 
 # -----------------------------------------------------------------------------
