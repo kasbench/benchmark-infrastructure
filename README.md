@@ -7,11 +7,15 @@ OpenTofu infrastructure-as-code for provisioning the KASBench (Kubernetes Autosc
 ```mermaid
 graph TB
     subgraph External["External (not managed by this stack)"]
-        Bastion["Bastion Host"]
+        Bastion["Bastion Host<br/>(172.31.23.100)"]
         S3["S3 Run Bucket"]
     end
 
-    subgraph VPC["AWS VPC (10.0.0.0/16)"]
+    subgraph BastionVPC["Bastion VPC (172.31.0.0/16)"]
+        Bastion
+    end
+
+    subgraph VPC["KASBench VPC (10.0.0.0/16)"]
         subgraph Public["Public Subnet"]
             IGW["Internet Gateway"]
             NAT["NAT Gateway + EIP"]
@@ -28,6 +32,8 @@ graph TB
             NLB["Internal NLB"]
         end
     end
+
+    BastionVPC <-->|VPC Peering| VPC
 
     Bastion -->|SSH| Runner
     Bastion -->|SSH| CP
@@ -51,7 +57,7 @@ graph TB
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                          AWS VPC (10.0.0.0/16)                      │
+│                      KASBench VPC (10.0.0.0/16)                     │
 │                                                                     │
 │  ┌─────────────────────────┐   ┌─────────────────────────────────┐  │
 │  │    Public Subnet        │   │       Private Subnet            │  │
@@ -70,12 +76,15 @@ graph TB
 │  │  └──────────────────┘   │   │  │ Internal NLB               │ │  │
 │  │                         │   │  └────────────────────────────┘ │  │
 │  └─────────────────────────┘   └─────────────────────────────────┘  │
+└────────────────────────────────────┬────────────────────────────────┘
+                                     │ VPC Peering
+┌────────────────────────────────────┴────────────────────────────────┐
+│                     Bastion VPC (172.31.0.0/16)                      │
+│                                                                     │
+│  ┌─────────────┐                                                    │
+│  │ Bastion Host│  (externally managed, 172.31.23.100)               │
+│  └─────────────┘                                                    │
 └─────────────────────────────────────────────────────────────────────┘
-         ▲
-         │ SSH
-  ┌──────┴──────┐
-  │ Bastion Host│  (externally managed)
-  └─────────────┘
 ```
 
 
@@ -83,7 +92,7 @@ graph TB
 
 - [OpenTofu](https://opentofu.org/docs/intro/install/) >= 1.6.0
 - AWS credentials configured (via environment variables, `~/.aws/credentials`, or IAM role)
-- A pre-existing **bastion host** with a known security group ID
+- A pre-existing **bastion host** with a known private IP (in a separate VPC)
 - A pre-existing **S3 bucket** for benchmark run artifacts
 - Custom **AMI IDs** for amd64 and arm64 instances (pre-built with Kubernetes toolchain)
 
@@ -100,7 +109,7 @@ graph TB
 │   ├── small.tfvars            # Small profile (dev/iteration)
 │   └── benchmark.tfvars       # Full benchmark profile
 ├── modules/
-│   ├── network/                # VPC, subnets, IGW, NAT GW, route tables, AZ selection
+│   ├── network/                # VPC, subnets, IGW, NAT GW, route tables, AZ selection, VPC peering
 │   ├── security/               # Security groups and rules
 │   ├── iam/                    # IAM roles, policies, instance profiles
 │   ├── compute/                # EC2 instances (CP, workers, benchmark-runner)
@@ -145,7 +154,9 @@ Required replacements:
 |----------|-------------|
 | `run_id` | Unique identifier for this benchmark run (e.g., `run-2026-05-28-001`) |
 | `owner` | Your name or team for cost allocation tags |
-| `bastion_security_group_id` | Security group ID of your bastion/controller host |
+| `bastion_ssh_cidr` | Private IP of your bastion host as a /32 CIDR (e.g., `"172.31.23.100/32"`) |
+| `bastion_vpc_id` | VPC ID where the bastion host resides (for VPC peering) |
+| `bastion_vpc_cidr` | CIDR block of the bastion VPC (for route table entries) |
 | `run_bucket_name` | Name of the pre-existing S3 bucket for artifacts |
 | `ami_amd64` | AMI ID for amd64 instances |
 | `ami_arm64` | AMI ID for arm64 instances |
@@ -204,7 +215,9 @@ This destroys all resources created by the stack (VPC, EC2, EBS, NLB, IAM, secur
 | `availability_zone_mode` | `string` | `"explicit"` or `"random"` |
 | `run_id` | `string` | Unique benchmark run identifier |
 | `owner` | `string` | Owner for cost allocation |
-| `bastion_security_group_id` | `string` | Bastion host security group ID |
+| `bastion_ssh_cidr` | `string` | Bastion host private IP as /32 CIDR |
+| `bastion_vpc_id` | `string` | Bastion VPC ID (for VPC peering) |
+| `bastion_vpc_cidr` | `string` | Bastion VPC CIDR (for routing) |
 | `run_bucket_name` | `string` | Pre-existing S3 bucket name |
 | `ami_amd64` | `string` | AMI ID for amd64 instances |
 | `ami_arm64` | `string` | AMI ID for arm64 instances |
@@ -257,7 +270,8 @@ This adds lifecycle preconditions that block destruction of EC2 instances and EB
 
 ## Security Model
 
-- All SSH access is restricted to the bastion host security group
+- All SSH access is restricted to the bastion host's private IP via CIDR-based security group rules
+- VPC peering connects the bastion VPC to the KASBench VPC with routes in both directions
 - The NLB is internal-only (no internet-facing endpoints)
 - IAM roles follow least-privilege (scoped to specific resources/tags)
 - Worker nodes get EBS CSI permissions for dynamic volume provisioning
@@ -275,7 +289,7 @@ This adds lifecycle preconditions that block destruction of EC2 instances and EB
 
 This stack **does not manage** the following resources — they must exist before apply:
 
-1. **Bastion Host** — EC2 instance with a security group for SSH access
+1. **Bastion Host** — EC2 instance in a separate VPC with a known private IP. This stack creates a VPC peering connection and bidirectional routes automatically.
 2. **S3 Run Bucket** — Pre-created bucket for benchmark artifacts
 3. **AMIs** — Custom machine images with Kubernetes toolchain pre-installed
 
