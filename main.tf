@@ -82,7 +82,8 @@ module "compute" {
   availability_zone = module.network.selected_availability_zone
 
   # SSH key pair
-  key_name = var.key_name
+  key_name         = aws_key_pair.fleet_key.key_name
+  fleet_public_key = tls_private_key.fleet_key.public_key_openssh
 
   # Instance configurations
   benchmark_runner_config = var.benchmark_runner_config

@@ -98,6 +98,21 @@ output "provisioning_metadata" {
 }
 
 # =============================================================================
+# SSH Key Management Outputs
+# =============================================================================
+
+output "ssh_private_key_path" {
+  description = "Local file path to the generated SSH private key"
+  value       = local_sensitive_file.fleet_private_key.filename
+  sensitive   = true
+}
+
+output "ssh_key_pair_name" {
+  description = "AWS EC2 key pair name assigned to all fleet instances"
+  value       = aws_key_pair.fleet_key.key_name
+}
+
+# =============================================================================
 # Verification Output (Requirement 18.3)
 # =============================================================================
 

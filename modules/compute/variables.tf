@@ -78,7 +78,17 @@ variable "ami_arm64" {
 # =============================================================================
 
 variable "key_name" {
-  description = "Name of a pre-existing EC2 key pair to assign to all instances"
+  description = "EC2 key pair name to assign to all fleet instances"
+  type        = string
+
+  validation {
+    condition     = length(var.key_name) > 0
+    error_message = "A non-empty key pair name is required."
+  }
+}
+
+variable "fleet_public_key" {
+  description = "SSH public key (OpenSSH format) to inject into all fleet instances via cloud-init"
   type        = string
 }
 

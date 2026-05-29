@@ -11,6 +11,7 @@ resource "aws_instance" "benchmark_runner" {
   iam_instance_profile        = var.benchmark_runner_profile_name
   key_name                    = var.key_name
   associate_public_ip_address = true
+  user_data                   = local.cloud_init_script
 
   root_block_device {
     volume_type           = var.root_volume_config.type

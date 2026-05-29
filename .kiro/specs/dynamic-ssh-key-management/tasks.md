@@ -6,24 +6,24 @@ Replace the static `key_name` variable (referencing a pre-existing EC2 key pair)
 
 ## Tasks
 
-- [ ] 1. Add TLS provider and create key generation resources
-  - [~] 1.1 Add the `tls` provider to `versions.tf`
+- [x] 1. Add TLS provider and create key generation resources
+  - [x] 1.1 Add the `tls` provider to `versions.tf`
     - Add `tls = { source = "hashicorp/tls", version = "~> 4.0" }` to the `required_providers` block
     - _Requirements: 7.1, 7.2, 7.3_
 
-  - [~] 1.2 Create `ssh_key.tf` in the repository root with key generation, registration, and persistence resources
+  - [x] 1.2 Create `ssh_key.tf` in the repository root with key generation, registration, and persistence resources
     - Add `tls_private_key.fleet_key` resource with `algorithm = "ED25519"`
     - Add `aws_key_pair.fleet_key` resource with `key_name = "kasbench-${var.run_id}"` and `public_key = tls_private_key.fleet_key.public_key_openssh`
     - Add `local_sensitive_file.fleet_private_key` resource with `content = tls_private_key.fleet_key.private_key_pem`, `filename = "${local.artifact_output_path}fleet_key.pem"`, and `file_permission = "0600"`
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4_
 
-- [ ] 2. Update compute module interface and add cloud-init
-  - [~] 2.1 Update `modules/compute/variables.tf` — add validation to `key_name` and add `fleet_public_key` variable
+- [x] 2. Update compute module interface and add cloud-init
+  - [x] 2.1 Update `modules/compute/variables.tf` — add validation to `key_name` and add `fleet_public_key` variable
     - Replace the existing `key_name` variable block with one that includes a `validation` block: `condition = length(var.key_name) > 0`, `error_message = "A non-empty key pair name is required."`
     - Add new variable `fleet_public_key` of type `string` with description "SSH public key (OpenSSH format) to inject into all fleet instances via cloud-init"
     - _Requirements: 4.1, 4.4, 6.2_
 
-  - [~] 2.2 Create `modules/compute/user_data.tf` with the cloud-init locals block
+  - [x] 2.2 Create `modules/compute/user_data.tf` with the cloud-init locals block
     - Define `locals { cloud_init_script = <<-EOF ... EOF }` containing a bash script that:
       - Uses `set -euo pipefail` for strict error handling
       - Appends `var.fleet_public_key` to `/home/ubuntu/.ssh/authorized_keys` (creating dir if needed, setting 600 perms, chown ubuntu:ubuntu)
@@ -31,31 +31,31 @@ Replace the static `key_name` variable (referencing a pre-existing EC2 key pair)
       - Runs `systemctl restart ssh`
     - _Requirements: 5.1, 5.2, 5.3, 6.1, 6.3, 6.4_
 
-  - [~] 2.3 Add `user_data` attribute to all EC2 instance resources
+  - [x] 2.3 Add `user_data` attribute to all EC2 instance resources
     - In `modules/compute/benchmark_runner.tf`: add `user_data = local.cloud_init_script` to `aws_instance.benchmark_runner`
     - In `modules/compute/control_plane.tf`: add `user_data = local.cloud_init_script` to `aws_instance.control_plane`
     - In `modules/compute/workers.tf`: add `user_data = local.cloud_init_script` to both `aws_instance.worker_amd64` and `aws_instance.worker_arm64`
     - _Requirements: 5.1, 6.4_
 
-- [~] 3. Checkpoint - Validate compute module changes
+- [x] 3. Checkpoint - Validate compute module changes
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 4. Wire root module and remove legacy variable
-  - [~] 4.1 Update `main.tf` — replace static key_name with dynamic references in the compute module call
+- [x] 4. Wire root module and remove legacy variable
+  - [x] 4.1 Update `main.tf` — replace static key_name with dynamic references in the compute module call
     - Replace `key_name = var.key_name` with `key_name = aws_key_pair.fleet_key.key_name`
     - Add `fleet_public_key = tls_private_key.fleet_key.public_key_openssh` to the compute module invocation
     - _Requirements: 4.3, 6.2, 6.3_
 
-  - [~] 4.2 Remove the `key_name` variable from root `variables.tf`
+  - [x] 4.2 Remove the `key_name` variable from root `variables.tf`
     - Delete the entire `key_name` variable block (including the "SSH Key Pair" section header comment)
     - _Requirements: 8.1_
 
-  - [~] 4.3 Add SSH outputs to root `outputs.tf`
+  - [x] 4.3 Add SSH outputs to root `outputs.tf`
     - Add `output "ssh_private_key_path"` with `value = local_sensitive_file.fleet_private_key.filename`, `sensitive = true`
     - Add `output "ssh_key_pair_name"` with `value = aws_key_pair.fleet_key.key_name`
     - _Requirements: 9.1, 9.2, 9.3_
 
-- [~] 5. Final checkpoint - Run `tofu validate` and confirm no legacy references
+- [x] 5. Final checkpoint - Run `tofu validate` and confirm no legacy references
   - Run `tofu validate` to confirm no undefined variable errors or missing arguments
   - Verify no `.tfvars` files reference `key_name` (grep check)
   - Ensure all tests pass, ask the user if questions arise.

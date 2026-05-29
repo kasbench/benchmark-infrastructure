@@ -12,6 +12,7 @@ resource "aws_instance" "worker_amd64" {
   vpc_security_group_ids = [var.worker_node_sg_id]
   iam_instance_profile   = var.worker_profile_name
   key_name               = var.key_name
+  user_data              = local.cloud_init_script
 
   root_block_device {
     volume_type           = var.root_volume_config.type
@@ -51,6 +52,7 @@ resource "aws_instance" "worker_arm64" {
   vpc_security_group_ids = [var.worker_node_sg_id]
   iam_instance_profile   = var.worker_profile_name
   key_name               = var.key_name
+  user_data              = local.cloud_init_script
 
   root_block_device {
     volume_type           = var.root_volume_config.type
