@@ -119,6 +119,16 @@ resource "aws_security_group_rule" "cp_ssh" {
   description       = "SSH from bastion"
 }
 
+resource "aws_security_group_rule" "cp_ssh_from_runner" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.benchmark_runner.id
+  security_group_id        = aws_security_group.control_plane.id
+  description              = "SSH from benchmark-runner"
+}
+
 resource "aws_security_group_rule" "cp_egress" {
   type              = "egress"
   from_port         = 0
@@ -190,6 +200,16 @@ resource "aws_security_group_rule" "worker_ssh" {
   cidr_blocks       = [var.bastion_ssh_cidr]
   security_group_id = aws_security_group.worker_node.id
   description       = "SSH from bastion"
+}
+
+resource "aws_security_group_rule" "worker_ssh_from_runner" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.benchmark_runner.id
+  security_group_id        = aws_security_group.worker_node.id
+  description              = "SSH from benchmark-runner"
 }
 
 resource "aws_security_group_rule" "worker_egress" {

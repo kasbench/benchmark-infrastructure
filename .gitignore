@@ -35,3 +35,6 @@ out.plan
 # OS files
 .DS_Store
 Thumbs.db
+
+# Artifacts
+artifacts

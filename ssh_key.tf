@@ -8,7 +8,7 @@ resource "aws_key_pair" "fleet_key" {
 }
 
 resource "local_sensitive_file" "fleet_private_key" {
-  content         = tls_private_key.fleet_key.private_key_pem
+  content         = tls_private_key.fleet_key.private_key_openssh
   filename        = "${local.artifact_output_path}fleet_key.pem"
   file_permission = "0600"
 }
