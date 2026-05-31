@@ -17,8 +17,8 @@ aws_region             = "us-east-1"
 availability_zone_mode = "explicit"
 availability_zone      = "us-east-1a"
 
-run_id = "dissertation-0001"  # Replace with actual run identifier
-owner  = "dissertation"   # Replace with owner name for cost allocation
+run_id = "trial001"  # Replace with actual run identifier
+owner  = "kasbench"   # Replace with owner name for cost allocation
 
 # -----------------------------------------------------------------------------
 # Network
