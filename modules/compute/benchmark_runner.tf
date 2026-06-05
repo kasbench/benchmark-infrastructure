@@ -3,7 +3,7 @@
 # =============================================================================
 
 resource "aws_instance" "benchmark_runner" {
-  ami                         = var.ami_amd64
+  ami                         = var.ami_runner_amd64
   instance_type               = var.benchmark_runner_config.instance_type
   subnet_id                   = var.public_subnet_id
   availability_zone           = var.availability_zone

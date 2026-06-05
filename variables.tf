@@ -130,6 +130,11 @@ variable "ami_arm64" {
   description = "AMI ID for arm64 instances"
 }
 
+variable "ami_runner_amd64" {
+  type        = string
+  description = "AMI ID for amd64 runner instances"
+}
+
 # =============================================================================
 # Compute
 # =============================================================================
