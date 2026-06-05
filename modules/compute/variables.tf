@@ -73,6 +73,11 @@ variable "ami_arm64" {
   type        = string
 }
 
+variable "ami_runner_amd64" {
+  type        = string
+  description = "AMI ID for amd64 runner instances"
+}
+
 # =============================================================================
 # SSH Key Pair
 # =============================================================================

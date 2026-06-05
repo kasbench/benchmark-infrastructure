@@ -92,6 +92,7 @@ module "compute" {
   root_volume_config      = var.root_volume_config
   ami_amd64               = var.ami_amd64
   ami_arm64               = var.ami_arm64
+  ami_runner_amd64        = var.ami_runner_amd64
 
   # Security group references
   benchmark_runner_sg_id = module.security.benchmark_runner_sg_id
