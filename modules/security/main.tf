@@ -69,6 +69,16 @@ resource "aws_security_group" "control_plane" {
   tags        = merge(var.tags, { Name = "kasbench-cp-sg" })
 }
 
+resource "aws_security_group_rule" "cp_all_from_workers" {
+  type                     = "ingress"
+  from_port                = 0
+  to_port                  = 0
+  protocol                 = "-1"
+  source_security_group_id = aws_security_group.worker_node.id
+  security_group_id        = aws_security_group.control_plane.id
+  description              = "All traffic from worker nodes"
+}
+
 resource "aws_security_group_rule" "cp_api_from_workers" {
   type                     = "ingress"
   from_port                = 6443
@@ -150,6 +160,26 @@ resource "aws_security_group" "worker_node" {
   vpc_id      = var.vpc_id
   description = "Kubernetes worker nodes"
   tags        = merge(var.tags, { Name = "kasbench-worker-sg" })
+}
+
+resource "aws_security_group_rule" "worker_all_from_cp" {
+  type                     = "ingress"
+  from_port                = 0
+  to_port                  = 0
+  protocol                 = "-1"
+  source_security_group_id = aws_security_group.control_plane.id
+  security_group_id        = aws_security_group.worker_node.id
+  description              = "All traffic from control plane"
+}
+
+resource "aws_security_group_rule" "worker_all_self" {
+  type              = "ingress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  self              = true
+  security_group_id = aws_security_group.worker_node.id
+  description       = "All traffic between worker nodes"
 }
 
 resource "aws_security_group_rule" "worker_kubelet_from_cp" {

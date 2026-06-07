@@ -59,6 +59,26 @@ resource "aws_iam_role_policy_attachment" "control_plane" {
   policy_arn = aws_iam_policy.control_plane.arn
 }
 
+resource "aws_iam_role_policy_attachment" "control_plane_ebs_csi" {
+  role       = aws_iam_role.control_plane.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "control_plane_s3_full" {
+  role       = aws_iam_role.control_plane.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "control_plane_ssm" {
+  role       = aws_iam_role.control_plane.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "control_plane_cloudwatch" {
+  role       = aws_iam_role.control_plane.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
+
 resource "aws_iam_instance_profile" "control_plane" {
   name_prefix = "kasbench-cp-"
   role        = aws_iam_role.control_plane.name
@@ -130,6 +150,26 @@ data "aws_iam_policy_document" "worker_node_policy" {
 resource "aws_iam_role_policy_attachment" "worker_node" {
   role       = aws_iam_role.worker_node.name
   policy_arn = aws_iam_policy.worker_node.arn
+}
+
+resource "aws_iam_role_policy_attachment" "worker_node_ebs_csi" {
+  role       = aws_iam_role.worker_node.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "worker_node_s3_full" {
+  role       = aws_iam_role.worker_node.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "worker_node_ssm" {
+  role       = aws_iam_role.worker_node.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "worker_node_cloudwatch" {
+  role       = aws_iam_role.worker_node.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 
 resource "aws_iam_instance_profile" "worker_node" {
