@@ -41,8 +41,8 @@ run_bucket_name           = "kasbench-test-20260528-377288663341-us-east-1-an " 
 # AMIs (PLACEHOLDERS - replace before apply)
 # -----------------------------------------------------------------------------
 
-ami_amd64 = "ami-0e9bb5aa03403fb04" # Replace with amd64 AMI ID
-ami_arm64 = "ami-03647711f14b625b8" # Replace with arm64 AMI ID
+ami_amd64 = "ami-0244585558b2aebd7" # Replace with amd64 AMI ID
+ami_arm64 = "ami-052bbac83b5bb0ab9" # Replace with arm64 AMI ID
 ami_runner_amd64 = "ami-0e9bb5aa03403fb04" # Replace with runner amd64 AMI ID
 
 # -----------------------------------------------------------------------------
