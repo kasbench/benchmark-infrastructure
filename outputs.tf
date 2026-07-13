@@ -85,6 +85,7 @@ output "ami_ids" {
   value = {
     amd64 = var.ami_amd64
     arm64 = var.ami_arm64
+    ami_runner_amd64 =  var.ami_runner_amd64
   }
 }
 

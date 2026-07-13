@@ -198,6 +198,146 @@ The stack exposes outputs designed for the separate Kubernetes bootstrap process
 - **`environment_description_paths`** — Paths to generated JSON/Markdown reports
 - **`provisioning_metadata`** — OpenTofu version, timestamp, git commit hash
 
+## Example Output
+
+After a successful `tofu apply`, `tofu output -json` produces output similar to:
+
+```json
+{
+  "control_plane": {
+    "value": {
+      "instance_id": "i-0a1b2c3d4e5f67890",
+      "private_ip": "10.0.1.50",
+      "instance_type": "t3.large",
+      "ami_id": "ami-0abc123def456789a",
+      "architecture": "amd64"
+    }
+  },
+  "worker_nodes": {
+    "value": {
+      "amd64": [
+        {
+          "instance_id": "i-0amd64worker00001",
+          "private_ip": "10.0.1.101",
+          "instance_type": "t3.large",
+          "ami_id": "ami-0abc123def456789a",
+          "architecture": "amd64"
+        }
+      ],
+      "arm64": [
+        {
+          "instance_id": "i-0arm64worker00001",
+          "private_ip": "10.0.1.201",
+          "instance_type": "t4g.large",
+          "ami_id": "ami-0def456789abc1230",
+          "architecture": "arm64"
+        }
+      ]
+    }
+  },
+  "benchmark_runner": {
+    "value": {
+      "instance_id": "i-0bench1a2b3c4d5e6",
+      "public_ip": "54.123.45.67",
+      "private_ip": "10.0.0.50"
+    }
+  },
+  "nlb": {
+    "value": {
+      "dns_name": "kasbench-nlb-run-2026-05-28-001-abc123.elb.us-east-1.amazonaws.com",
+      "arn": "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/kasbench-nlb-run-2026-05-28-001/abc123def456",
+      "listener_arn": "arn:aws:elasticloadbalancing:us-east-1:123456789012:listener/net/kasbench-nlb-run-2026-05-28-001/abc123def456/789ghi",
+      "target_group_arn": "arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/kasbench-tg-run-2026-05-28-001/xyz789abc123"
+    }
+  },
+  "security_groups": {
+    "value": {
+      "control_plane_sg": {
+        "id": "sg-0cp1234567890abcd",
+        "rules": ["Allow SSH from bastion", "Allow K8s API (6443) from VPC", "Allow kubelet from workers"]
+      },
+      "worker_sg": {
+        "id": "sg-0wk1234567890abcd",
+        "rules": ["Allow SSH from bastion", "Allow all from control plane", "Allow NodePort range from NLB"]
+      },
+      "benchmark_runner_sg": {
+        "id": "sg-0br1234567890abcd",
+        "rules": ["Allow SSH from bastion", "Allow egress to VPC"]
+      },
+      "nlb_sg": {
+        "id": "sg-0nlb234567890abcd",
+        "rules": ["Allow HTTP (80) from VPC"]
+      }
+    }
+  },
+  "storage": {
+    "value": {
+      "ebs_volumes": {
+        "etcd": {
+          "volume_id": "vol-0etcd1234567890ab",
+          "size_gb": 20,
+          "type": "gp3",
+          "availability_zone": "us-east-1a"
+        }
+      },
+      "storage_class_metadata": {
+        "provisioner": "ebs.csi.aws.com",
+        "type": "gp3",
+        "fs_type": "ext4"
+      }
+    }
+  },
+  "network": {
+    "value": {
+      "vpc_id": "vpc-0kasbench1234abcd",
+      "public_subnet_id": "subnet-0pub1234567890abc",
+      "private_subnet_id": "subnet-0priv234567890abc",
+      "selected_availability_zone": "us-east-1a",
+      "igw_id": "igw-0kas1234567890abc",
+      "nat_gw_id": "nat-0kas1234567890abc",
+      "route_table_ids": {
+        "public": "rtb-0pub1234567890abc",
+        "private": "rtb-0priv234567890abc"
+      }
+    }
+  },
+  "run_bucket_name": {
+    "value": "kasbench-runs-2026"
+  },
+  "run_id": {
+    "value": "run-2026-05-28-001"
+  },
+  "environment_description_paths": {
+    "value": {
+      "json_path": "artifacts/run-2026-05-28-001/environment-description.json",
+      "markdown_path": "artifacts/run-2026-05-28-001/environment-description.md",
+      "checksums_path": "artifacts/run-2026-05-28-001/checksums.txt"
+    }
+  },
+  "ami_ids": {
+    "value": {
+      "amd64": "ami-0abc123def456789a",
+      "arm64": "ami-0def456789abc1230"
+    }
+  },
+  "provisioning_metadata": {
+    "value": {
+      "opentofu_version": ">=1.6.0 (constraint)",
+      "creation_timestamp": "2026-05-28T14:32:07Z",
+      "git_commit_hash": "a3f8c2d1e4b5678901234567890abcdef1234567"
+    }
+  },
+  "ssh_key_pair_name": {
+    "value": "kasbench-fleet-run-2026-05-28-001"
+  },
+  "environment_profile": {
+    "value": "small"
+  }
+}
+```
+
+> **Note:** `ssh_private_key_path` is marked `sensitive` and is redacted from JSON output. Use `tofu output ssh_private_key_path` to retrieve it directly.
+
 ## Environment Description
 
 After `tofu apply`, the stack generates environment description files in `artifacts/<run_id>/`:

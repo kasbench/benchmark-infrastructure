@@ -132,7 +132,7 @@ Implement the KASBench AWS infrastructure as OpenTofu IaC with a root module at 
     - Create `modules/environment-description/outputs.tf` exposing: json_path, markdown_path, checksums_path
     - _Requirements: 16.4, 23.5_
 
-- [~] 10. Checkpoint - Validate all modules independently
+- [x] 10. Checkpoint - Validate all modules independently
   - Ensure all tests pass, ask the user if questions arise.
   - Run `tofu validate` to confirm all modules parse correctly
 
@@ -174,7 +174,7 @@ Implement the KASBench AWS infrastructure as OpenTofu IaC with a root module at 
     - Confirm all taggable resources include required tags (Property 1)
     - _Requirements: 6.5, 11.3, 14.2, 15.2, 17.1, 18.2_
 
-- [~] 14. Final checkpoint - Ensure all validation passes
+- [x] 14. Final checkpoint - Ensure all validation passes
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
