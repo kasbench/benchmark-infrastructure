@@ -120,7 +120,7 @@ variable "artifact_prefixes" {
 # AMIs
 # =============================================================================
 
-variable "ami_amd64:" {
+variable "ami_amd64" {
   type        = string
   description = "AMI ID for amd64 instances"
 }
