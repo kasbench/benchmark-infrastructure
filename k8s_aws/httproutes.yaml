@@ -1,0 +1,248 @@
+# =============================================================================
+# HTTPRoutes — path-based routing for all 12 globeco microservices
+# =============================================================================
+# Each route maps a path prefix to the corresponding ClusterIP Service.
+# The Gateway fans traffic out based on the URL path.
+#
+# Path design:
+#   /allocations    → globeco-allocation-service:8089
+#   /confirmations  → globeco-confirmation-service:80
+#   /executions     → globeco-execution-service:8084
+#   /fix-engine     → globeco-fix-engine-service:80
+#   /order-gen      → globeco-order-generation-service:8088
+#   /orders         → globeco-order-service:8081
+#   /accounting     → globeco-portfolio-accounting-service:8087
+#   /portal         → globeco-portfolio-management-portal:3000
+#   /portfolios     → globeco-portfolio-service:8000
+#   /pricing        → globeco-pricing-service:8083
+#   /securities     → globeco-security-service:8000
+#   /trades         → globeco-trade-service:8082
+# =============================================================================
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: allocation-route
+  namespace: globeco
+spec:
+  parentRefs:
+    - name: globeco-gateway
+      namespace: globeco
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /allocations
+      backendRefs:
+        - name: globeco-allocation-service
+          port: 8089
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: confirmation-route
+  namespace: globeco
+spec:
+  parentRefs:
+    - name: globeco-gateway
+      namespace: globeco
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /confirmations
+      backendRefs:
+        - name: globeco-confirmation-service
+          port: 80
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: execution-route
+  namespace: globeco
+spec:
+  parentRefs:
+    - name: globeco-gateway
+      namespace: globeco
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /executions
+      backendRefs:
+        - name: globeco-execution-service
+          port: 8084
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: fix-engine-route
+  namespace: globeco
+spec:
+  parentRefs:
+    - name: globeco-gateway
+      namespace: globeco
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /fix-engine
+      backendRefs:
+        - name: globeco-fix-engine-service
+          port: 80
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: order-generation-route
+  namespace: globeco
+spec:
+  parentRefs:
+    - name: globeco-gateway
+      namespace: globeco
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /order-gen
+      backendRefs:
+        - name: globeco-order-generation-service
+          port: 8088
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: order-route
+  namespace: globeco
+spec:
+  parentRefs:
+    - name: globeco-gateway
+      namespace: globeco
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /orders
+      backendRefs:
+        - name: globeco-order-service
+          port: 8081
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: portfolio-accounting-route
+  namespace: globeco
+spec:
+  parentRefs:
+    - name: globeco-gateway
+      namespace: globeco
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /accounting
+      backendRefs:
+        - name: globeco-portfolio-accounting-service
+          port: 8087
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: portal-route
+  namespace: globeco
+spec:
+  parentRefs:
+    - name: globeco-gateway
+      namespace: globeco
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /portal
+      backendRefs:
+        - name: globeco-portfolio-management-portal
+          port: 3000
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: portfolio-route
+  namespace: globeco
+spec:
+  parentRefs:
+    - name: globeco-gateway
+      namespace: globeco
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /portfolios
+      backendRefs:
+        - name: globeco-portfolio-service
+          port: 8000
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: pricing-route
+  namespace: globeco
+spec:
+  parentRefs:
+    - name: globeco-gateway
+      namespace: globeco
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /pricing
+      backendRefs:
+        - name: globeco-pricing-service
+          port: 8083
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: security-route
+  namespace: globeco
+spec:
+  parentRefs:
+    - name: globeco-gateway
+      namespace: globeco
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /securities
+      backendRefs:
+        - name: globeco-security-service
+          port: 8000
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: trade-route
+  namespace: globeco
+spec:
+  parentRefs:
+    - name: globeco-gateway
+      namespace: globeco
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /trades
+      backendRefs:
+        - name: globeco-trade-service
+          port: 8082

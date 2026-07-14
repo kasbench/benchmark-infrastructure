@@ -1,0 +1,14 @@
+# =============================================================================
+# GatewayClass — selects Envoy Gateway as the implementation
+# =============================================================================
+# Prerequisite: Install Envoy Gateway into the cluster first:
+#   helm install eg oci://docker.io/envoyproxy/gateway-helm \
+#     --version v1.3.0 \
+#     -n envoy-gateway-system --create-namespace
+# =============================================================================
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: envoy-gateway
+spec:
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller

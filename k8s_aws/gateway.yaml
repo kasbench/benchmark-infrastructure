@@ -1,0 +1,29 @@
+# =============================================================================
+# Gateway — the single entrypoint for all globeco services
+# =============================================================================
+# Envoy Gateway will create a Service of type NodePort (per the infrastructure
+# annotation below). The NLB forwards :80 → NodePort 30080, so this Gateway
+# listens on port 80 and the backing EnvoyProxy is configured to use 30080.
+#
+# Traffic flow:
+#   NLB :80 → Worker Node :30080 → Envoy Gateway Pod → HTTPRoute → Service
+# =============================================================================
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: globeco-gateway
+  namespace: globeco
+  annotations:
+    # Tell Envoy Gateway to expose as NodePort on the specific port the NLB targets
+    gateway.envoyproxy.io/service-type: NodePort
+spec:
+  gatewayClassName: envoy-gateway
+  infrastructure:
+    parametersRef:
+      group: gateway.envoyproxy.io
+      kind: EnvoyProxy
+      name: globeco-proxy-config
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80

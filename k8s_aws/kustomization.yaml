@@ -1,0 +1,20 @@
+# =============================================================================
+# Kustomization — apply all Gateway API manifests:
+#   kubectl apply -k k8s_aws/
+# =============================================================================
+# Prerequisites:
+#   1. Install Gateway API CRDs:
+#      kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.1/standard-install.yaml
+#   2. Install Envoy Gateway:
+#      helm install eg oci://docker.io/envoyproxy/gateway-helm \
+#        --version v1.3.0 -n envoy-gateway-system --create-namespace
+#   3. Ensure the globeco namespace exists and services are deployed
+# =============================================================================
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - gateway-class.yaml
+  - envoy-proxy-nodeport-patch.yaml
+  - gateway.yaml
+  - httproutes.yaml

@@ -1,0 +1,27 @@
+# =============================================================================
+# EnvoyProxy — pins the Gateway's backing Service to NodePort 30080
+# =============================================================================
+# This ensures the Envoy proxy Service gets nodePort 30080, which matches the
+# NLB target group configuration (nlb_config.listeners[0].target_port = 30080).
+# =============================================================================
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: globeco-proxy-config
+  namespace: globeco
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        type: NodePort
+        patch:
+          type: StrategicMerge
+          value:
+            spec:
+              ports:
+                - name: http
+                  protocol: TCP
+                  port: 80
+                  targetPort: 10080
+                  nodePort: 30080

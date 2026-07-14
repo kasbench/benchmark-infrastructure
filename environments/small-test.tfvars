@@ -35,7 +35,7 @@ private_subnet_cidr = "10.0.2.0/24"
 bastion_ssh_cidr           = "172.31.76.104/32"                 # Bastion host private IP
 bastion_vpc_id             = "vpc-66884d1b"                     # Bastion VPC ID (for peering)
 bastion_vpc_cidr           = "172.31.0.0/16"                    # Bastion VPC CIDR (for routing)
-run_bucket_name           = "kasbench-test-20260528-377288663341-us-east-1-an " # Replace with pre-existing S3 bucket name
+run_bucket_name           = "kasbench-test-20260528-377288663341-us-east-1-an" # Replace with pre-existing S3 bucket name
 
 # -----------------------------------------------------------------------------
 # AMIs (PLACEHOLDERS - replace before apply)
