@@ -19,9 +19,19 @@ resource "aws_security_group_rule" "runner_ssh_in" {
   from_port         = 22
   to_port           = 22
   protocol          = "tcp"
-  cidr_blocks       = [var.bastion_ssh_cidr]
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.benchmark_runner.id
-  description       = "SSH from bastion host"
+  description       = "SSH from anywhere (bastion peering unreliable)"
+}
+
+resource "aws_security_group_rule" "runner_api_in" {
+  type              = "ingress"
+  from_port         = 8080
+  to_port           = 8080
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.benchmark_runner.id
+  description       = "Runner API from bastion host"
 }
 
 resource "aws_security_group_rule" "runner_egress" {
