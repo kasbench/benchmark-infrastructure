@@ -109,6 +109,16 @@ resource "aws_security_group_rule" "cp_api_from_runner" {
   description              = "Kubernetes API from benchmark-runner"
 }
 
+resource "aws_security_group_rule" "cp_prom_api_from_runner" {
+  type                     = "ingress"
+  from_port                = 31565
+  to_port                  = 31565
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.benchmark_runner.id
+  security_group_id        = aws_security_group.control_plane.id
+  description              = "Prometheus API from benchmark-runner"
+}
+
 resource "aws_security_group_rule" "cp_etcd" {
   type              = "ingress"
   from_port         = 2379
