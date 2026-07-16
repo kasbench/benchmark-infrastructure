@@ -12,7 +12,7 @@
 #   /order-gen      → globeco-order-generation-service:8088
 #   /orders         → globeco-order-service:8081
 #   /accounting     → globeco-portfolio-accounting-service:8087
-#   /portal         → globeco-portfolio-management-portal:3000
+#   /               → globeco-portfolio-management-portal:3000  (default/catch-all)
 #   /portfolios     → globeco-portfolio-service:8000
 #   /pricing        → globeco-pricing-service:8083
 #   /securities     → globeco-security-service:8000
@@ -166,7 +166,7 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /portal
+            value: /
       backendRefs:
         - name: globeco-portfolio-management-portal
           port: 3000
