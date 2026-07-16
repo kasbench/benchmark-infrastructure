@@ -3,8 +3,13 @@ variable "vpc_id" {
   type        = string
 }
 
+variable "public_subnet_id" {
+  description = "Public subnet ID for internet-facing NLB placement"
+  type        = string
+}
+
 variable "private_subnet_id" {
-  description = "Private subnet ID for NLB placement"
+  description = "Private subnet ID (retained for future use)"
   type        = string
 }
 
@@ -32,4 +37,9 @@ variable "tags" {
   description = "Common tags to apply to all load-balancing resources"
   type        = map(string)
   default     = {}
+}
+
+variable "worker_instance_ids" {
+  description = "List of worker node instance IDs to register as NLB targets"
+  type        = list(string)
 }

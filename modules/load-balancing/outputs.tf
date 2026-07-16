@@ -1,9 +1,9 @@
 output "nlb_metadata" {
-  description = "Internal NLB metadata including DNS name, ARN, listeners, and target groups"
+  description = "Public NLB metadata including DNS name, ARN, listeners, and target groups"
   value = {
     dns_name = aws_lb.internal.dns_name
     arn      = aws_lb.internal.arn
-    scheme   = "internal"
+    scheme   = "internet-facing"
     listeners = { for k, l in aws_lb_listener.ingress : k => {
       port     = l.port
       protocol = l.protocol

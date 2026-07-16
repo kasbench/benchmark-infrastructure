@@ -1,20 +1,21 @@
 # =============================================================================
-# Internal Network Load Balancer for KASBench Infrastructure
+# Public Network Load Balancer for KASBench Infrastructure
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Internal NLB
-# Placed in private subnet, never internet-facing
+# Internet-facing NLB
+# Placed in public subnet so the benchmark runner (and external clients) can
+# reach the Envoy gateway via NodePort on the worker nodes.
 # -----------------------------------------------------------------------------
 
 resource "aws_lb" "internal" {
   name_prefix        = "kasb-"
-  internal           = true
+  internal           = false
   load_balancer_type = "network"
-  subnets            = [var.private_subnet_id]
+  subnets            = [var.public_subnet_id]
   security_groups    = [var.nlb_sg_id]
 
-  tags = merge(var.tags, { Name = "kasbench-internal-nlb" })
+  tags = merge(var.tags, { Name = "kasbench-public-nlb" })
 }
 
 # -----------------------------------------------------------------------------
@@ -62,4 +63,32 @@ resource "aws_lb_listener" "ingress" {
   }
 
   tags = merge(var.tags, { Name = "kasbench-listener-${each.key}" })
+}
+
+# -----------------------------------------------------------------------------
+# Target Group Attachments
+# Register all worker nodes in every target group so the NLB can forward
+# traffic to the Envoy proxy NodePort (30080) on any worker.
+# -----------------------------------------------------------------------------
+
+locals {
+  # Build a flat list: one entry per (listener × worker instance)
+  tg_attachments = flatten([
+    for l in var.nlb_config.listeners : [
+      for id in var.worker_instance_ids : {
+        key         = "${l.name}-${id}"
+        listener    = l.name
+        instance_id = id
+        port        = l.target_port
+      }
+    ]
+  ])
+}
+
+resource "aws_lb_target_group_attachment" "workers" {
+  for_each = { for a in local.tg_attachments : a.key => a }
+
+  target_group_arn = aws_lb_target_group.ingress[each.value.listener].arn
+  target_id        = each.value.instance_id
+  port             = each.value.port
 }

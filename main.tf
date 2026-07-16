@@ -123,10 +123,15 @@ module "load_balancing" {
   source = "./modules/load-balancing"
 
   vpc_id            = module.network.vpc_id
+  public_subnet_id  = module.network.public_subnet_id
   private_subnet_id = module.network.private_subnet_id
   nlb_sg_id         = module.security.nlb_sg_id
   nlb_config        = var.nlb_config
-  tags              = local.common_tags
+  worker_instance_ids = concat(
+    [for w in module.compute.worker_nodes_metadata.amd64 : w.instance_id],
+    [for w in module.compute.worker_nodes_metadata.arm64 : w.instance_id],
+  )
+  tags = local.common_tags
 }
 
 # =============================================================================

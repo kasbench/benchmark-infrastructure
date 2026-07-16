@@ -52,18 +52,28 @@ resource "aws_security_group_rule" "runner_egress" {
 resource "aws_security_group" "nlb" {
   name_prefix = "kasbench-nlb-"
   vpc_id      = var.vpc_id
-  description = "Internal NLB: traffic from benchmark-runner only"
+  description = "Public NLB: port 80 from anywhere"
   tags        = merge(var.tags, { Name = "kasbench-nlb-sg" })
 }
 
-resource "aws_security_group_rule" "nlb_from_runner" {
-  type                     = "ingress"
-  from_port                = 0
-  to_port                  = 65535
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.benchmark_runner.id
-  security_group_id        = aws_security_group.nlb.id
-  description              = "All TCP from benchmark-runner"
+resource "aws_security_group_rule" "nlb_http_in" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.nlb.id
+  description       = "HTTP from anywhere (temporary - tighten later)"
+}
+
+resource "aws_security_group_rule" "nlb_egress" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.nlb.id
+  description       = "Allow all outbound (NLB to worker NodePorts)"
 }
 
 # -----------------------------------------------------------------------------
