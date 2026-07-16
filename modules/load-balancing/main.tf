@@ -73,10 +73,11 @@ resource "aws_lb_listener" "ingress" {
 
 locals {
   # Build a flat list: one entry per (listener × worker instance)
+  # Key uses a static index so for_each doesn't depend on apply-time values.
   tg_attachments = flatten([
     for l in var.nlb_config.listeners : [
-      for id in var.worker_instance_ids : {
-        key         = "${l.name}-${id}"
+      for idx, id in var.worker_instance_ids : {
+        key         = "${l.name}-${idx}"
         listener    = l.name
         instance_id = id
         port        = l.target_port
