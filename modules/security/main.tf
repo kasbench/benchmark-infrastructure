@@ -232,6 +232,16 @@ resource "aws_security_group_rule" "worker_nodeport" {
   description       = "NodePort range inter-node"
 }
 
+resource "aws_security_group_rule" "worker_nodeport_from_nlb" {
+  type                     = "ingress"
+  from_port                = 30080
+  to_port                  = 30080
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.nlb.id
+  security_group_id        = aws_security_group.worker_node.id
+  description              = "Envoy NodePort from NLB"
+}
+
 resource "aws_security_group_rule" "worker_prometheus" {
   type              = "ingress"
   from_port         = 9090
