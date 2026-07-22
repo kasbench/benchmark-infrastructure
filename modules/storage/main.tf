@@ -34,3 +34,41 @@ resource "aws_ebs_volume" "etcd" {
     }
   }
 }
+
+# =============================================================================
+# Amazon EFS File System - Execution Data
+# =============================================================================
+# One Zone storage in the same AZ as compute, no backups, no lifecycle,
+# no encryption, enhanced throughput mode, general purpose performance.
+
+resource "aws_efs_file_system" "execution_data" {
+  creation_token = "kasbench-execution-data"
+
+  availability_zone_name = var.availability_zone
+  encrypted              = false
+  throughput_mode        = "elastic"
+  performance_mode       = "generalPurpose"
+
+  protection {
+    replication_overwrite = "ENABLED"
+  }
+
+  tags = merge(var.tags, {
+    Name     = "execution-data"
+    Workload = "execution-data"
+  })
+}
+
+resource "aws_efs_backup_policy" "execution_data" {
+  file_system_id = aws_efs_file_system.execution_data.id
+
+  backup_policy {
+    status = "DISABLED"
+  }
+}
+
+resource "aws_efs_mount_target" "execution_data" {
+  file_system_id  = aws_efs_file_system.execution_data.id
+  subnet_id       = var.private_subnet_id
+  security_groups = [var.efs_sg_id]
+}

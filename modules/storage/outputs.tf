@@ -37,3 +37,9 @@ output "storage_class_metadata" {
     }
   }
 }
+
+
+output "efs_file_system_id" {
+  description = "ID of the EFS file system for execution data"
+  value       = aws_efs_file_system.execution_data.id
+}

@@ -22,6 +22,11 @@ output "worker_node_sg_id" {
   value       = aws_security_group.worker_node.id
 }
 
+output "efs_sg_id" {
+  description = "Security group ID for EFS mount targets"
+  value       = aws_security_group.efs.id
+}
+
 output "all_security_groups" {
   description = "All security groups with IDs, names, and rule descriptions"
   value = {
@@ -44,6 +49,11 @@ output "all_security_groups" {
       id    = aws_security_group.worker_node.id
       name  = aws_security_group.worker_node.name
       rules = "10250 from CP; 30000-32767 self; 9090/9100 self; SSH from bastion; all egress"
+    }
+    efs = {
+      id    = aws_security_group.efs.id
+      name  = aws_security_group.efs.name
+      rules = "NFS 2049 from worker nodes; all egress"
     }
   }
 }

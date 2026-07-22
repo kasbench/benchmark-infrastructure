@@ -64,6 +64,8 @@ module "storage" {
   etcd_volume_config      = var.etcd_volume_config
   environment_profile     = var.environment_profile
   debug_retention_enabled = var.debug_retention_enabled
+  private_subnet_id       = module.network.private_subnet_id
+  efs_sg_id               = module.security.efs_sg_id
   tags                    = local.common_tags
 }
 

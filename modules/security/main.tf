@@ -291,3 +291,36 @@ resource "aws_security_group_rule" "worker_egress" {
   security_group_id = aws_security_group.worker_node.id
   description       = "Allow all outbound"
 }
+
+
+# -----------------------------------------------------------------------------
+# EFS Security Group
+# NFS (2049) from worker nodes only
+# -----------------------------------------------------------------------------
+
+resource "aws_security_group" "efs" {
+  name_prefix = "kasbench-efs-"
+  vpc_id      = var.vpc_id
+  description = "EFS mount targets: NFS from worker nodes"
+  tags        = merge(var.tags, { Name = "kasbench-efs-sg" })
+}
+
+resource "aws_security_group_rule" "efs_nfs_from_workers" {
+  type                     = "ingress"
+  from_port                = 2049
+  to_port                  = 2049
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.worker_node.id
+  security_group_id        = aws_security_group.efs.id
+  description              = "NFS from worker nodes"
+}
+
+resource "aws_security_group_rule" "efs_egress" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.efs.id
+  description       = "Allow all outbound"
+}

@@ -41,6 +41,7 @@ output "storage" {
   value = {
     ebs_volumes            = module.storage.all_volumes
     storage_class_metadata = module.storage.storage_class_metadata
+    efs_file_system_id     = module.storage.efs_file_system_id
   }
 }
 
@@ -65,6 +66,11 @@ output "run_bucket_name" {
 output "run_id" {
   description = "Unique identifier for this benchmark run"
   value       = var.run_id
+}
+
+output "efs_file_system_id" {
+  description = "ID of the EFS file system for execution data"
+  value       = module.storage.efs_file_system_id
 }
 
 output "environment_description_paths" {

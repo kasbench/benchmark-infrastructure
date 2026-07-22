@@ -29,3 +29,13 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "private_subnet_id" {
+  description = "ID of the private subnet for EFS mount target placement"
+  type        = string
+}
+
+variable "efs_sg_id" {
+  description = "Security group ID to attach to EFS mount targets"
+  type        = string
+}
