@@ -139,6 +139,12 @@ variable "ami_runner_amd64" {
 # Compute
 # =============================================================================
 
+variable "spot" {
+  type        = bool
+  description = "Use spot instances for all EC2 instances (one-time request). Pass -var 'spot=true' to enable."
+  default     = false
+}
+
 variable "benchmark_runner_config" {
   type = object({
     instance_type = string

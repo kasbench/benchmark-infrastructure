@@ -14,6 +14,16 @@ resource "aws_instance" "worker_amd64" {
   key_name               = var.key_name
   user_data              = local.cloud_init_script
 
+  dynamic "instance_market_options" {
+    for_each = var.spot ? [1] : []
+    content {
+      market_type = "spot"
+      spot_options {
+        spot_instance_type = "one-time"
+      }
+    }
+  }
+
   root_block_device {
     volume_type           = var.root_volume_config.type
     volume_size           = var.root_volume_config.size_gib
@@ -53,6 +63,16 @@ resource "aws_instance" "worker_arm64" {
   iam_instance_profile   = var.worker_profile_name
   key_name               = var.key_name
   user_data              = local.cloud_init_script
+
+  dynamic "instance_market_options" {
+    for_each = var.spot ? [1] : []
+    content {
+      market_type = "spot"
+      spot_options {
+        spot_instance_type = "one-time"
+      }
+    }
+  }
 
   root_block_device {
     volume_type           = var.root_volume_config.type

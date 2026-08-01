@@ -110,6 +110,7 @@ module "compute" {
   etcd_volume_id = module.storage.etcd_volume_id
 
   # Operational
+  spot                    = var.spot
   environment_profile     = var.environment_profile
   debug_retention_enabled = var.debug_retention_enabled
   tags                    = local.common_tags
