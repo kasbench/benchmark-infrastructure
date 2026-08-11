@@ -55,24 +55,9 @@ variable "public_subnet_cidr" {
   description = "Public subnet CIDR block"
 }
 
-variable "private_subnet_id" {
-  type        = string
-  description = "Private subnet ID"
-}
-
-variable "private_subnet_cidr" {
-  type        = string
-  description = "Private subnet CIDR block"
-}
-
 variable "igw_id" {
   type        = string
   description = "Internet Gateway ID"
-}
-
-variable "nat_gw_id" {
-  type        = string
-  description = "NAT Gateway ID"
 }
 
 variable "route_table_ids" {

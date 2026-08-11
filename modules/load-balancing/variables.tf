@@ -8,11 +8,6 @@ variable "public_subnet_id" {
   type        = string
 }
 
-variable "private_subnet_id" {
-  description = "Private subnet ID (retained for future use)"
-  type        = string
-}
-
 variable "nlb_sg_id" {
   description = "Security group ID for the internal NLB"
   type        = string

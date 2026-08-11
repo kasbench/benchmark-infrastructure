@@ -21,11 +21,6 @@ variable "public_subnet_cidr" {
   type        = string
 }
 
-variable "private_subnet_cidr" {
-  description = "CIDR block for the private subnet"
-  type        = string
-}
-
 variable "availability_zone_mode" {
   description = "AZ selection mode: 'explicit' to use a specified AZ, 'random' to select one randomly"
   type        = string

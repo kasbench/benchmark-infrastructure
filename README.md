@@ -1,31 +1,32 @@
 # KASBench Benchmark Infrastructure
 
-OpenTofu infrastructure-as-code for provisioning the KASBench (Kubernetes Autoscaler Benchmark) AWS environment. This stack deploys a self-managed Kubernetes cluster on EC2 with heterogeneous worker nodes, an internal NLB for benchmark traffic routing, and full environment description generation for reproducibility.
+OpenTofu infrastructure-as-code for provisioning the KASBench (Kubernetes Autoscaler Benchmark) AWS environment. This stack deploys a self-managed Kubernetes cluster on EC2 with heterogeneous worker nodes, a public NLB for benchmark traffic routing, and full environment description generation for reproducibility.
 
 ## Architecture Overview
 
+All instances reside in a single public subnet and use the Internet Gateway directly for outbound access (container image pulls, etc.). There is no NAT Gateway — this keeps costs low for a short-lived benchmark environment with only synthetic data.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                      KASBench VPC (10.0.0.0/16)                     │
 │                                                                     │
-│  ┌─────────────────────────┐   ┌─────────────────────────────────┐  │
-│  │    Public Subnet        │   │       Private Subnet            │  │
-│  │                         │   │                                 │  │
-│  │  ┌──────────────────┐   │   │  ┌────────────────────────────┐ │  │
-│  │  │ Benchmark Runner │   │   │  │ Control Plane (amd64)      │ │  │
-│  │  │ (t3.medium)      │───┼───┼─▶│ + etcd EBS volume          │ │  │
-│  │  └──────────────────┘   │   │  └────────────────────────────┘ │  │
-│  │                         │   │                                 │  │
-│  │  ┌──────────────────┐   │   │  ┌────────────────────────────┐ │  │
-│  │  │ NAT Gateway      │   │   │  │ Workers: amd64 group       │ │  │
-│  │  └──────────────────┘   │   │  │ Workers: arm64 group       │ │  │
-│  │                         │   │  └────────────────────────────┘ │  │
-│  │  ┌──────────────────┐   │   │                                 │  │
-│  │  │ Internet Gateway │   │   │  ┌────────────────────────────┐ │  │
-│  │  └──────────────────┘   │   │  │ Internal NLB               │ │  │
-│  │                         │   │  └────────────────────────────┘ │  │
-│  └─────────────────────────┘   └─────────────────────────────────┘  │
+│  ┌───────────────────────────────────────────────────────────────┐  │
+│  │                   Public Subnet (10.0.1.0/24)                 │  │
+│  │                                                               │  │
+│  │  ┌──────────────────┐  ┌────────────────────────────────────┐ │  │
+│  │  │ Benchmark Runner │  │ Control Plane (amd64)              │ │  │
+│  │  │ (t3.medium)      │  │ + etcd EBS volume                  │ │  │
+│  │  └──────────────────┘  └────────────────────────────────────┘ │  │
+│  │                                                               │  │
+│  │  ┌────────────────────────────────────────────────────────┐   │  │
+│  │  │ Workers: amd64 group + arm64 group                     │   │  │
+│  │  └────────────────────────────────────────────────────────┘   │  │
+│  │                                                               │  │
+│  │  ┌──────────────────┐  ┌────────────────────────────────────┐ │  │
+│  │  │ Internet Gateway │  │ Public NLB → Workers :30080        │ │  │
+│  │  └──────────────────┘  └────────────────────────────────────┘ │  │
+│  │                                                               │  │
+│  └───────────────────────────────────────────────────────────────┘  │
 └────────────────────────────────────┬────────────────────────────────┘
                                      │ VPC Peering
 ┌────────────────────────────────────┴────────────────────────────────┐
@@ -59,11 +60,11 @@ OpenTofu infrastructure-as-code for provisioning the KASBench (Kubernetes Autosc
 │   ├── small.tfvars            # Small profile (dev/iteration)
 │   └── benchmark.tfvars       # Full benchmark profile
 ├── modules/
-│   ├── network/                # VPC, subnets, IGW, NAT GW, route tables, AZ selection, VPC peering
+│   ├── network/                # VPC, subnet, IGW, route tables, AZ selection, VPC peering
 │   ├── security/               # Security groups and rules
 │   ├── iam/                    # IAM roles, policies, instance profiles
 │   ├── compute/                # EC2 instances (CP, workers, benchmark-runner)
-│   ├── load-balancing/         # Internal NLB, listeners, target groups
+│   ├── load-balancing/         # Public NLB, listeners, target groups
 │   ├── storage/                # Pre-created EBS volumes, StorageClass metadata
 │   └── environment-description/ # JSON + Markdown report generation
 └── artifacts/                  # Generated environment description output
@@ -194,7 +195,7 @@ The stack exposes outputs designed for the separate Kubernetes bootstrap process
 - **`nlb`** — DNS name, ARN, listener and target group details
 - **`security_groups`** — All SG IDs with rule descriptions
 - **`storage`** — EBS volume IDs and StorageClass metadata
-- **`network`** — VPC ID, subnet IDs, AZ, gateway IDs
+- **`network`** — VPC ID, subnet ID, AZ, gateway ID
 - **`environment_description_paths`** — Paths to generated JSON/Markdown reports
 - **`provisioning_metadata`** — OpenTofu version, timestamp, git commit hash
 
@@ -291,13 +292,10 @@ After a successful `tofu apply`, `tofu output -json` produces output similar to:
     "value": {
       "vpc_id": "vpc-0kasbench1234abcd",
       "public_subnet_id": "subnet-0pub1234567890abc",
-      "private_subnet_id": "subnet-0priv234567890abc",
       "selected_availability_zone": "us-east-1a",
       "igw_id": "igw-0kas1234567890abc",
-      "nat_gw_id": "nat-0kas1234567890abc",
       "route_table_ids": {
-        "public": "rtb-0pub1234567890abc",
-        "private": "rtb-0priv234567890abc"
+        "public": "rtb-0pub1234567890abc"
       }
     }
   },
@@ -360,12 +358,17 @@ This adds lifecycle preconditions that block destruction of EC2 instances and EB
 
 ## Security Model
 
-- All SSH access is restricted to the bastion host's private IP via CIDR-based security group rules
+This is a short-lived benchmark environment running only synthetic data. The network topology prioritizes simplicity and cost over defense-in-depth, while remaining reasonably tamper-proof:
+
+- All instances have public IPs but are protected by restrictive security groups
+- SSH access is restricted to the bastion host's private IP via CIDR-based security group rules
 - VPC peering connects the bastion VPC to the KASBench VPC with routes in both directions
-- The NLB is internal-only (no internet-facing endpoints)
+- The Kubernetes API (port 6443) is only accessible from within the VPC (workers, runner)
+- The NLB is internet-facing to allow the benchmark runner to route traffic to worker NodePorts
 - IAM roles follow least-privilege (scoped to specific resources/tags)
 - Worker nodes get EBS CSI permissions for dynamic volume provisioning
 - Benchmark runner gets S3 write access scoped to the specific run bucket
+- No NAT Gateway — all outbound traffic goes directly through the Internet Gateway
 
 ## Providers
 

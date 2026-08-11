@@ -8,7 +8,7 @@
 # =============================================================================
 # Network Module
 # =============================================================================
-# Creates VPC, subnets, IGW, NAT GW, route tables, and handles AZ selection.
+# Creates VPC, public subnet, IGW, route tables, and handles AZ selection.
 # No module dependencies — this is the foundation layer.
 
 module "network" {
@@ -16,7 +16,6 @@ module "network" {
 
   vpc_cidr               = var.vpc_cidr
   public_subnet_cidr     = var.public_subnet_cidr
-  private_subnet_cidr    = var.private_subnet_cidr
   availability_zone_mode = var.availability_zone_mode
   availability_zone      = var.availability_zone
   aws_region             = var.aws_region
@@ -64,7 +63,7 @@ module "storage" {
   etcd_volume_config      = var.etcd_volume_config
   environment_profile     = var.environment_profile
   debug_retention_enabled = var.debug_retention_enabled
-  private_subnet_id       = module.network.private_subnet_id
+  subnet_id               = module.network.public_subnet_id
   efs_sg_id               = module.security.efs_sg_id
   tags                    = local.common_tags
 }
@@ -80,7 +79,6 @@ module "compute" {
 
   # Network references
   public_subnet_id  = module.network.public_subnet_id
-  private_subnet_id = module.network.private_subnet_id
   availability_zone = module.network.selected_availability_zone
 
   # SSH key pair
@@ -119,7 +117,7 @@ module "compute" {
 # =============================================================================
 # Load Balancing Module
 # =============================================================================
-# Creates internal NLB, listeners, and target groups.
+# Creates internet-facing NLB, listeners, and target groups.
 # Depends on: network, security.
 
 module "load_balancing" {
@@ -127,7 +125,6 @@ module "load_balancing" {
 
   vpc_id            = module.network.vpc_id
   public_subnet_id  = module.network.public_subnet_id
-  private_subnet_id = module.network.private_subnet_id
   nlb_sg_id         = module.security.nlb_sg_id
   nlb_config        = var.nlb_config
   worker_instance_ids = concat(
@@ -154,15 +151,12 @@ module "environment_description" {
   output_path         = local.artifact_output_path
 
   # Network outputs
-  vpc_id              = module.network.vpc_id
-  vpc_cidr            = var.vpc_cidr
-  public_subnet_id    = module.network.public_subnet_id
-  public_subnet_cidr  = var.public_subnet_cidr
-  private_subnet_id   = module.network.private_subnet_id
-  private_subnet_cidr = var.private_subnet_cidr
-  igw_id              = module.network.igw_id
-  nat_gw_id           = module.network.nat_gw_id
-  route_table_ids     = module.network.route_table_ids
+  vpc_id             = module.network.vpc_id
+  vpc_cidr           = var.vpc_cidr
+  public_subnet_id   = module.network.public_subnet_id
+  public_subnet_cidr = var.public_subnet_cidr
+  igw_id             = module.network.igw_id
+  route_table_ids    = module.network.route_table_ids
 
   # Security outputs
   security_groups = module.security.all_security_groups

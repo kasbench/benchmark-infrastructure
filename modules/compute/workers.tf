@@ -5,14 +5,15 @@
 resource "aws_instance" "worker_amd64" {
   count = var.worker_groups.amd64.count
 
-  ami                    = var.ami_amd64
-  instance_type          = var.worker_groups.amd64.instance_type
-  subnet_id              = var.private_subnet_id
-  availability_zone      = var.availability_zone
-  vpc_security_group_ids = [var.worker_node_sg_id]
-  iam_instance_profile   = var.worker_profile_name
-  key_name               = var.key_name
-  user_data              = local.cloud_init_script
+  ami                         = var.ami_amd64
+  instance_type               = var.worker_groups.amd64.instance_type
+  subnet_id                   = var.public_subnet_id
+  availability_zone           = var.availability_zone
+  vpc_security_group_ids      = [var.worker_node_sg_id]
+  iam_instance_profile        = var.worker_profile_name
+  key_name                    = var.key_name
+  associate_public_ip_address = true
+  user_data                   = local.cloud_init_script
 
   dynamic "instance_market_options" {
     for_each = var.spot ? [1] : []
@@ -55,14 +56,15 @@ resource "aws_instance" "worker_amd64" {
 resource "aws_instance" "worker_arm64" {
   count = var.worker_groups.arm64.count
 
-  ami                    = var.ami_arm64
-  instance_type          = var.worker_groups.arm64.instance_type
-  subnet_id              = var.private_subnet_id
-  availability_zone      = var.availability_zone
-  vpc_security_group_ids = [var.worker_node_sg_id]
-  iam_instance_profile   = var.worker_profile_name
-  key_name               = var.key_name
-  user_data              = local.cloud_init_script
+  ami                         = var.ami_arm64
+  instance_type               = var.worker_groups.arm64.instance_type
+  subnet_id                   = var.public_subnet_id
+  availability_zone           = var.availability_zone
+  vpc_security_group_ids      = [var.worker_node_sg_id]
+  iam_instance_profile        = var.worker_profile_name
+  key_name                    = var.key_name
+  associate_public_ip_address = true
+  user_data                   = local.cloud_init_script
 
   dynamic "instance_market_options" {
     for_each = var.spot ? [1] : []

@@ -19,15 +19,10 @@
           "public": {
             "id": ${jsonencode(public_subnet_id)},
             "cidr": ${jsonencode(public_subnet_cidr)}
-          },
-          "private": {
-            "id": ${jsonencode(private_subnet_id)},
-            "cidr": ${jsonencode(private_subnet_cidr)}
           }
         },
         "gateways": {
-          "internet_gateway": ${jsonencode(igw_id)},
-          "nat_gateway": ${jsonencode(nat_gw_id)}
+          "internet_gateway": ${jsonencode(igw_id)}
         },
         "route_tables": ${jsonencode(route_table_ids)}
       },

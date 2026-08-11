@@ -7,14 +7,15 @@ locals {
 }
 
 resource "aws_instance" "control_plane" {
-  ami                    = var.ami_amd64
-  instance_type          = var.control_plane_config.instance_type
-  subnet_id              = var.private_subnet_id
-  availability_zone      = var.availability_zone
-  vpc_security_group_ids = [var.control_plane_sg_id]
-  iam_instance_profile   = var.control_plane_profile_name
-  key_name               = var.key_name
-  user_data              = local.cloud_init_script
+  ami                         = var.ami_amd64
+  instance_type               = var.control_plane_config.instance_type
+  subnet_id                   = var.public_subnet_id
+  availability_zone           = var.availability_zone
+  vpc_security_group_ids      = [var.control_plane_sg_id]
+  iam_instance_profile        = var.control_plane_profile_name
+  key_name                    = var.key_name
+  associate_public_ip_address = true
+  user_data                   = local.cloud_init_script
 
   dynamic "instance_market_options" {
     for_each = var.spot ? [1] : []

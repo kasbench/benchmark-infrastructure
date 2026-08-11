@@ -30,8 +30,8 @@ variable "tags" {
   default     = {}
 }
 
-variable "private_subnet_id" {
-  description = "ID of the private subnet for EFS mount target placement"
+variable "subnet_id" {
+  description = "ID of the subnet for EFS mount target placement"
   type        = string
 }
 

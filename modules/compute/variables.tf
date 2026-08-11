@@ -3,12 +3,7 @@
 # =============================================================================
 
 variable "public_subnet_id" {
-  description = "ID of the public subnet for the benchmark-runner"
-  type        = string
-}
-
-variable "private_subnet_id" {
-  description = "ID of the private subnet for control plane and worker nodes"
+  description = "ID of the public subnet for all instances"
   type        = string
 }
 

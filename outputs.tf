@@ -27,7 +27,7 @@ output "benchmark_runner" {
 }
 
 output "nlb" {
-  description = "Internal NLB metadata including DNS name and target group ARNs"
+  description = "Public NLB metadata including DNS name and target group ARNs"
   value       = module.load_balancing.nlb_metadata
 }
 
@@ -50,10 +50,8 @@ output "network" {
   value = {
     vpc_id                     = module.network.vpc_id
     public_subnet_id           = module.network.public_subnet_id
-    private_subnet_id          = module.network.private_subnet_id
     selected_availability_zone = module.network.selected_availability_zone
     igw_id                     = module.network.igw_id
-    nat_gw_id                  = module.network.nat_gw_id
     route_table_ids            = module.network.route_table_ids
   }
 }

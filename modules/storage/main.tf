@@ -69,6 +69,6 @@ resource "aws_efs_backup_policy" "execution_data" {
 
 resource "aws_efs_mount_target" "execution_data" {
   file_system_id  = aws_efs_file_system.execution_data.id
-  subnet_id       = var.private_subnet_id
+  subnet_id       = var.subnet_id
   security_groups = [var.efs_sg_id]
 }

@@ -17,10 +17,7 @@ locals {
     vpc_cidr            = var.vpc_cidr
     public_subnet_id    = var.public_subnet_id
     public_subnet_cidr  = var.public_subnet_cidr
-    private_subnet_id   = var.private_subnet_id
-    private_subnet_cidr = var.private_subnet_cidr
     igw_id              = var.igw_id
-    nat_gw_id           = var.nat_gw_id
     route_table_ids     = var.route_table_ids
 
     # Security

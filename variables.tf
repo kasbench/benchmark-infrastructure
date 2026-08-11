@@ -60,12 +60,6 @@ variable "public_subnet_cidr" {
   default     = "10.0.1.0/24"
 }
 
-variable "private_subnet_cidr" {
-  type        = string
-  description = "CIDR block for the private subnet"
-  default     = "10.0.2.0/24"
-}
-
 # =============================================================================
 # External Dependencies
 # =============================================================================
@@ -234,7 +228,7 @@ variable "nlb_config" {
       health_check_path     = optional(string)
     }))
   })
-  description = "Internal NLB listener and target group configuration"
+  description = "NLB listener and target group configuration"
   default = {
     listeners = [{
       name                  = "http"
