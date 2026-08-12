@@ -49,7 +49,7 @@ ami_runner_amd64 = "ami-03a891c9de365d954" # Replace with runner amd64 AMI ID
 # -----------------------------------------------------------------------------
 
 control_plane_config = {
-  instance_type = "t3a.small"
+  instance_type = "t3a.large"
 }
 
 benchmark_runner_config = {
