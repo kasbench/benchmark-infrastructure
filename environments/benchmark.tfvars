@@ -15,7 +15,9 @@
 
 environment_profile    = "benchmark"
 aws_region             = "us-east-1"
-availability_zone_mode = "random"
+# availability_zone_mode = "random"
+availability_zone_mode = "explicit"
+availability_zone      = "us-east-1a"
 
 run_id = "PLACEHOLDER-RUN-ID"  # Replace with actual run identifier
 owner  = "PLACEHOLDER-OWNER"   # Replace with owner name for cost allocation
