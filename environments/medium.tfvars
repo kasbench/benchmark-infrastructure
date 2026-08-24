@@ -12,7 +12,7 @@
 # Core Configuration
 # -----------------------------------------------------------------------------
 
-environment_profile    = "small"
+environment_profile    = "medium"
 aws_region             = "us-east-1"
 availability_zone_mode = "explicit"
 availability_zone      = "us-east-1a"
