@@ -58,11 +58,11 @@ benchmark_runner_config = {
 
 worker_groups = {
   amd64 = {
-    instance_type = "c6a.2xlarge"
+    instance_type = "c6a.4xlarge"
     count         = 1
   }
   arm64 = {
-    instance_type = "c6g.2xlarge"
+    instance_type = "c6g.4xlarge"
     count         = 1
   }
 }
